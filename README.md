@@ -2,7 +2,7 @@
 
 <br>
 
-![cover](https://git.acsoftware.it/acsoftware/r-and-d/code_explainer/-/raw/main/img/cover.png)
+![cover](https://github.com/ArchAI-Labs/code_explainer/blob/main/img/cover.png)
 
 <br>
 
@@ -178,7 +178,7 @@ The project employs a diverse set of technologies, frameworks, and libraries tha
 
 <br>
 
-![components](https://git.acsoftware.it/acsoftware/r-and-d/code_explainer/-/raw/main/img/component_diagram.png)
+![components](https://github.com/ArchAI-Labs/code_explainer/blob/main/img/component_diagram.png)
 
 <br>
 
@@ -219,7 +219,7 @@ The project adheres to a structured directory layout, enabling ease of navigatio
 
 <br>
 
-![sequence](https://git.acsoftware.it/acsoftware/r-and-d/code_explainer/-/raw/main/img/sequence_diagram.png)
+![sequence](https://github.com/ArchAI-Labs/code_explainer/blob/main/img/sequence_diagram.png)
 
 <br>
 
