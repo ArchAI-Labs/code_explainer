@@ -1,0 +1,37 @@
+[project]
+name = "code_explainer"
+version = "0.1.0"
+description = "code-explainer using crewAI"
+authors = [{ name = "Nicola Procopio", email = "nicola.procopio@acsoftware.it" }]
+requires-python = ">=3.10,<3.13"
+dependencies = [
+    "crewai[tools]>=0.98.0,<1.0.0",
+    "plantweb>=1.2",
+    "gitpython",
+    "esprima",
+    "tree-sitter==0.24.0",
+    "tree-sitter-languages==1.10.2",
+    "panel==1.6.0",
+    "google-generativeai",
+    "pytest",
+    "qdrant-client[fastembed]",
+    "fitz",
+    "pymupdf",
+    "javalang"
+    "streamlit"
+
+]
+
+[project.scripts]
+code_explainer = "code_explainer.main:run"
+run_crew = "code_explainer.main:run"
+train = "code_explainer.main:train"
+replay = "code_explainer.main:replay"
+test = "code_explainer.main:test"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.crewai]
+type = "crew"
