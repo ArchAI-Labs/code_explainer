@@ -1,4 +1,4 @@
-# ArchAI
+# ArchAI - Your Code Explainer
 
 <br>
 
