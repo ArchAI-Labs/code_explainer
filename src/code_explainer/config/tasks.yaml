@@ -1,0 +1,350 @@
+analysis_task:
+  description: >
+    Analyze the provided {repo} to understand its purpose, technologies used, and major components.
+            This is the full source code: {repo}.
+            Identify and document the following:
+            - The overall purpose of the project.
+            - The technologies, APIs, and frameworks used.
+            - All major components (e.g., classes, interfaces, functions, methods).
+            - The interactions between these components.
+            - The architectural patterns and design principles applied.
+  expected_output: >
+    A detailed analysis report covering the purpose of the project, 
+    the technologies, APIs, frameworks used, 
+    a list of components and their interactions, 
+    and architectural patterns and design principles applied.
+
+  agent: software_analyst
+
+code_quality_task:
+  description: >
+    Analyze the provided {sonarqube_json} for the {repo} project.
+    Carefully examine the sections related to bugs, vulnerabilities, 
+    code smells, code coverage, and duplication.
+    Provide a detailed summary of each area, quantifying relevant metrics 
+    and identifying the main weaknesses of the code from a quality perspective.
+    Also, suggest specific improvements that could be implemented to address these issues.
+    Ensure your report is comprehensive and well-structured, 
+    providing all the necessary information for the documentation_writer 
+    to include an exhaustive section on code quality in the README.
+    If {sonarqube_json} is empty, your answer MUST BE "Not enough informations to write a report.".
+    If the code coverage is sufficiently high (above 80%), acknowledge that it is good, so avoid unnecessary remarks about the remaining
+    uncovered code in this case.
+
+  expected_output: >
+    ```json
+    {
+      "bugs": {
+        "count": "Number of bugs identified",
+        "major": "Number of major bugs",
+        "critical": "Number of critical bugs",
+        "details": "Brief description of significant bugs"
+      },
+      "vulnerabilities": {
+        "count": "Number of vulnerabilities identified",
+        "major": "Number of major vulnerabilities",
+        "critical": "Number of critical vulnerabilities",
+        "details": "Brief description of significant vulnerabilities"
+      },
+      "code_smells": {
+        "count": "Number of code smells",
+        "major": "Number of major code smells",
+        "details": "Examples of common code smell types found"
+      },
+      "coverage": {
+        "line_coverage": "Percentage of lines covered by tests",
+        "branch_coverage": "Percentage of branches covered by tests",
+        "details": "Areas with low coverage"
+      },
+      "duplication": {
+        "lines": "Number of duplicated lines",
+        "percentage": "Percentage of duplicated lines",
+        "details": "Examples of duplicated code blocks"
+      },
+      "weaknesses": "Summary of the main code quality weaknesses identified",
+      "suggested_improvements": [
+        "Specific actionable suggestions to address the identified issues"
+      ]
+    }
+    ```
+  agent: sonar_quality_analyst
+
+documentation_task:
+  description: >
+    Review the context you got and expand each topic into a full section for a report.
+    The report must be rich, complete, and self-contained — similar in depth and scope to internal system documentation.
+    Each section must be fully developed, informative, and technically meaningful.
+
+    You are not summarizing or simplifying — you are elaborating in full.
+    Explain motivations behind architectural choices, clarify roles of different modules or components, 
+    and define domain-specific terminology relevant to the project, and now also include a summary and 
+    interpretation of the code quality metrics and identified weaknesses from SonarQube.
+    Your goal is to make the document useful for developers, architects, and stakeholders alike.
+    Do not wrap the output in any code block markers like ```text, ```markdown, or triple quotes. 
+    The document should be raw, clean Markdown, exactly as it would appear in the final file.
+    Under no circumstances add code block delimiters at the beginning or end of the document.
+
+    For the "Getting Started" section, you must:
+      1. Explain any prerequisites (e.g., programming language version, build tool, environment setup) 
+         and general build steps (e.g., how to compile the code, run tests, package or deploy).
+      - Explains how to clone the repository using the URL provided as {repository_url}.
+           For instance: "git clone {repository_url}"
+      2. Provide an overview of how each primary module or subproject is typically used in the application:
+         - One short paragraph per module/subproject describing how to integrate or invoke it,
+           and the main value it brings to the system.
+      3. Demonstrate minimal usage patterns or configuration references (without raw source code),
+         focusing on practical guidance (e.g., how to set up environment variables, register services, or enable security).
+
+    For the "Weaknesses and Areas for Improvement" section, synthesize the findings from both the software analyst 
+    (technical debt, potential issues) and the SonarQube analyst (bugs, vulnerabilities, code smells).
+    Do NOT analyze or critique the code directly.
+    Instead, write it as a structured list of concrete TODOs for future releases or documentation improvements.
+    These should reflect missing features, unclear responsibilities, documentation gaps, 
+    integration points, or architectural areas that could be enhanced or clarified, 
+    and now also include actionable items based on the identified code quality issues 
+    (e.g., refactor complex modules, improve test coverage in specific areas, address high-priority vulnerabilities).
+    Approach this section as a documentation and product-focused agent, not as a code reviewer.
+    The output should guide the roadmap and future planning of the project, considering both functionality and code quality.
+
+  expected_output: >
+    A fully fledged, production-level report with the main topics, each expanded into a complete, standalone section,
+    now including a detailed overview of the project's architecture and code quality.
+    You should include weaknesses and areas for improvement, formatted as roadmap-oriented TODOs,
+    incorporating both technical and code quality aspects.
+    Do not include source code or code snippets.
+    The output must be formatted as pure Markdown text, without wrapping the entire document in code block markers
+    (no '```', no triple quotes ''', and no language identifiers like 'markdown' or 'text').
+    Use regular paragraphs, headings, and sub-headings for clarity.
+    The title must be the repository name only.
+    
+    Avoid enclosing the entire output in any kind of code block or special formatting markers.
+    Output the document as clean text, as it should appear in the final README.md file.
+    
+    ## Overview  
+    Provide a comprehensive overview of the overall project's purpose,
+    architectural scope, and target use cases.  
+    Clearly distinguish between the general framework or platform and the specific
+    role of this repository within that broader context.  
+    Explain what the project enables, who it's for, and why it exists.  
+    Also include a description of the specific purpose of this repository and
+    the role of each internal module in supporting the project's overall goals.
+
+    
+    ## Technology Stack
+    **List and describe** only the must relevant technologies, frameworks, and libraries used in the project.
+    - **Language:** [Programming Language]
+    - **Frameworks:** [Frameworks Used]
+    - **Libraries:** [Libraries Used]
+    - **Tools:** [Tools Used]
+
+    ## Directory Structure
+    Outline the directory structure of the project with brief descriptions of each directory and file.
+    Include subdirectories, modules, and relevant test locations where possible.
+    For example:
+    ├── src/
+    │ ├── main.py - Entry point of the application
+    │ ├── utils.py - Utility functions
+    │ └── ...
+    ├── tests/
+    │ ├── test_main.py - Tests for main.py
+    │ └── ...
+    └── README.md - Project documentation
+    
+    ## Getting Started
+    Provide instructions on:
+      - General build steps (e.g., prerequisites, compilation, tests, packaging)
+      - Required configuration or environment variables
+      - Usage of each primary module: one short paragraph per module describing how to integrate
+        or invoke it in an external project or application
+      - For each module, clearly explain how it can be imported, added as a dependency, deployed in a compatible runtime environment,
+        or activated through configuration or annotations.
+        In the 'Module Usage' section, you must include at least one realistic example showing how a module can be imported and configured
+        in an external project. This example must be relevant to the framework's intended usage context,
+        and must reflect how an end-user would typically set it up.
+      - Minimal references to usage patterns or setup steps (avoid showing raw code), focusing on practical and realistic examples.
+
+    ## Functional Analysis
+    Provide an in-depth explanation of the high-level features, responsibilities, and functional areas of the codebase.
+    Address each of the following aspects in a dedicated subsection, elaborating on examples and rationale where applicable:
+      ### 1. Main Responsibilities of the System
+      Describe the primary duties or roles the system fulfills.
+      Clarify what its core purpose is and how it manages or orchestrates various functionalities.
+      Include any foundational services or abstractions the system provides.
+      
+      ### 2. Problems the System Solves
+      Explain the specific issues or challenges the system addresses.
+      Highlight real-world scenarios or user needs that the system is designed to meet,
+      and illustrate how its architecture or components solve these problems.
+      
+      ### 3. Interaction of Modules and Components
+      Detail how different modules or components communicate and collaborate.
+      Discuss dependency flows, event handling, or shared interfaces.
+      Emphasize any notable design patterns or architectural decisions that enable efficient interaction or loose coupling.
+      
+      ### 4. User-Facing vs. System-Facing Functionalities
+      Differentiate the functionalities directly visible to end users (such as UIs, REST endpoints, CLI commands)
+      from those meant for internal processes or other system components (e.g., background jobs, frameworks, security layers).
+      Explain how each set of functionalities contributes to the overall goals of the application.
+    
+    Additionally, explicitly identify and document:
+    - Any interface or abstract class that systematically applies common annotations,
+    decorators, or behaviors across all implementing or extending classes, ensuring consistent and shared functionality.
+      
+    
+    ## Architectural Patterns and Design Principles Applied
+    List and describe all architectural patterns and design principles applied.
+    Provide examples or explain how they are used within the system (e.g., Dependency Injection, Service-Oriented Architecture,
+    Interceptor, Event-Driven, Role-Based Access Control, etc.).
+
+    ## Code Quality Analysis
+    Provide a summary of the code quality analysis derived from the SonarQube report. Include key metrics such as:
+    - **Bugs:** Number and severity of identified bugs.
+    - **Vulnerabilities:** Number and severity of identified security vulnerabilities.
+    - **Code Smells:** Number and types of code smells detected.
+    - **Code Coverage:** Percentage of lines and branches covered by tests.
+    - **Duplication:** Percentage of duplicated code.
+    Briefly explain the implications of these metrics for the project's maintainability, reliability, and security.
+    If {sonarqube_json} is empty, contains an "error" key, or exactly equals "Not enough informations to write a report."
+    your answer MUST BE "Not enough informations to write a report.". Do not generate any other text or commentary in this case.
+
+
+    ## Weaknesses and Areas for Improvement
+    Reframe weaknesses identified by the software analyst and code quality issues reported by SonarQube 
+    as concrete TODO items for future releases or roadmap planning.
+    Focus on functional gaps, unclear behaviors, insufficient documentation, architectural enhancements, 
+    and now also include actionable items to address code quality issues 
+    (e.g., refactor module X to reduce complexity, increase test coverage for feature Y, 
+    address high-priority security vulnerabilities reported by SonarQube).
+    Use brief descriptions and concise bullet points or checkboxes to structure the section.
+
+    ## Further Areas of Investigation
+    Identify and describe any architectural or technical elements that warrant additional exploration or clarification.
+    Provide a set of items or areas that may require deeper analysis in future iterations, focusing on potential performance bottlenecks,
+    scalability considerations, integrations with external systems, advanced features to be researched,
+    or areas of the codebase with significant code smells or low test coverage.
+
+    ## Attribution
+    Generated with the support of ArchAI, an automated documentation system.
+
+  agent: documentation_writer
+
+diagram_task:
+  description: >
+    Generate a PlantUML {diagram_type} diagram that focuses only on the most essential elements of the architecture
+    described in the provided README or context, and save it in {output_format} format.
+
+    The {diagram_type} parameter can be:
+    - 'class' for class diagrams
+    - 'component' for component diagrams
+    - 'sequence' for sequence diagrams
+    - 'all' to generate all three diagrams (class, component, and sequence) in sequence.
+
+    If 'all' is selected, output all diagrams in the following order:
+    1. Class diagram
+    2. Component diagram
+    3. Sequence diagram
+    
+    If 'all' is selected, you MUST process each diagram type separately and strictly independently:
+    1. First generate the class diagram, considering ONLY classes, interfaces, attributes, methods, and their relationships.
+    2. Once completed, reset your context completely, clear previous diagram elements, and ONLY THEN
+    generate the component diagram, strictly considering ONLY components, interfaces, packages, and their interactions.
+    You must NOT reference classes or methods here.
+    3. Again, reset your context completely, clear previous diagram elements, and ONLY THEN
+    generate the sequence diagram, strictly focusing on participants, actors, messages, and activations
+    without including elements from class or component diagrams.
+    If you encounter an error during the generation of any diagram, regenerate only that specific diagram and NOT ALL.
+    DO NOT mix elements or references between diagrams.
+    Each diagram must be entirely self-contained and reflect ONLY its specified type of elements.
+    If the diagram generation tool fails or produces an invalid file, you MUST review and correct
+      the PlantUML code and retry generation until success.
+
+    You must:
+    - Include only the **most relevant interfaces/classes/components/participants** 
+    - Do NOT include helper or annotation-only interfaces unless they are architecturally central.
+    - Group elements into packages or namespaces where appropriate.
+    - For class diagrams, show key method names and types (e.g., `getId(): Long`, `find(String): T`).
+    - Include **relationships** between elements (e.g., inheritance, dependency, association).
+    - Ensure each diagram is **structurally informative and visually compact** (avoid overwhelming size).
+    - Strip out excessive whitespace or empty lines in the output.
+    - When defining macros or reusable structures, **do not include comments inside macro parameters**,
+      as they may cause syntax errors.
+      Place any explanatory comments **outside** of macro definitions.
+    - When creating components or diagram elements that will be referenced in relationships,
+      **always assign an alias** to each element.
+      Use the assigned alias in connections or relationships instead of the visual name.
+      Example: define `component "Component Name" as CN`, then reference as `CN --> OtherComponentAlias : Uses`.
+    - DO NOT INCLUDE inside the code block headings like '## Class Diagram', '## Component Diagram', or '## Sequence Diagram'
+
+  inputs:
+    diagram_type: "{diagram_type}"
+    output_format: "{output_format}"
+
+  diagram_rules:
+    component:
+      keyword: "component"
+      allowed_elements: [ "component", "interface", "artifact", "ports", "package"]
+      disallowed_elements: [ "class", "attributes", "methods", "tool", "agent"]
+      description: >
+        - Use the keyword `component` to represent high-level modules or services.
+        - **Use `interface` for external dependencies or interactions**.
+        - **Use `artifact` to represent files (e.g., `.py`, `.md`, `.svg`)**.
+        - **Use `package` to logically group related components** (e.g., Agents, Tools, Memory).
+        - **Do NOT list methods, attributes, or internal details** inside components.
+        - Focus on **interactions and relationships** between components.
+        - Represent dependencies using **interfaces (`interface`) or ports (`[ ]`)**.
+        - Always assign an alias to components and use aliases in relationships.
+          Example: `component "Repository-service" as RS`, then `RS --> RE : Uses`.
+
+    class:
+      keyword: "class"
+      allowed_elements: ["class", "interface", "attributes", "methods"]
+      disallowed_elements: ["component", "ports", "artifact"]
+      description: >
+        - Use the keyword `class` to represent classes, interfaces, or abstract classes.
+        - Include **attributes and methods** inside each class.
+        - Show **inheritance, associations, and dependencies**.
+
+    sequential:
+      keyword: "sequence"
+      allowed_elements: ["actor", "participant", "message", "activation"]
+      disallowed_elements: ["class", "component", "artifact"]
+      description: >
+        - Use the keyword `participant` to define entities before referencing them in messages.
+        - Ensure all **actors, participants, and lifelines** are declared before usage.
+        - Use `->` for synchronous messages and `-->` for asynchronous messages.
+        - Always **match each `activate` with a corresponding `deactivate`** to avoid inconsistent activation flows.
+        - Avoid **unsupported characters** (e.g., `/`, special symbols, or spaces) in participant names.
+        - If a participant name contains special characters or spaces, use an **alias (`as`)** to assign a valid identifier.
+        - Ensure messages follow the correct PlantUML syntax and are aligned with the sequence flow.
+        - Do **not use `parallel`**, as it is **not supported in PlantUML sequence diagrams**.
+        - To indicate parallel execution, use **`group`** instead (e.g., `group Parallel Execution`).
+        - Maintain a clear **logical order of interactions** to avoid missing or redundant messages.
+
+  expected_output: >
+    PlantUML code that accurately represents the requested {diagram_type} diagram
+    and is saved in {output_format} format, conforming to PlantUML syntax.
+    If the {diagram_type} is 'all', output the diagrams sequentially, each preceded by a heading indicating the diagram type:
+      ## Class Diagram
+      (class diagram PlantUML code)
+      ## Component Diagram
+      (component diagram PlantUML code)
+      ## Sequence Diagram
+      (sequence diagram PlantUML code)
+
+  validation_rules:
+    - "IF `{diagram_type}` is 'class' and output contains `component`, reject and regenerate."
+    - "IF `{diagram_type}` is 'component' and output contains `class` as a **PlantUML keyword**, reject and regenerate."
+    - "IF `{diagram_type}` is 'component' and output contains `agent`, `task`, `tool`, or `memory`,
+      ensure they are categorized under `package` or `interface`, not as `component`."
+    - "IF `{diagram_type}` is 'component' and a file (ending in `.py`, `.md`, `.svg`) is defined as a `component`,
+      convert it to an `artifact` instead of rejecting."
+    - "IF `{diagram_type}` is 'sequence' AND `activate` has NO corresponding `deactivate`, reject and regenerate."
+    - "IF `{diagram_type}` is 'sequence' AND a message points to an undefined `participant`, reject and regenerate."
+    - "IF `{diagram_type}` is 'sequence' AND `parallel` is used, suggest `group Parallel Execution` instead."
+    - "IF macros or reusable definitions are used, ensure no comments are present inside macro parameters to prevent syntax errors."
+    - "IF `{diagram_type}` is 'component' AND any element is referenced in a relationship without an alias, reject and regenerate.
+      Always define and use aliases for references."
+    - "IF the PlantUML code contains headings like '## Class Diagram', '## Component Diagram', or '## Sequence Diagram'
+      inside the code block, reject and regenerate."
+
+  agent: code_diagramming_agent
