@@ -316,4 +316,4 @@ Let's create wonders together with the power and simplicity of crewAI.
 
 ## Attribution
 
-Generated with the support of ArchAI, an automated documentation system.
+Generated with the support of [ArchAI](https://github.com/ArchAI-Labs/code_explainer), an automated documentation system.
