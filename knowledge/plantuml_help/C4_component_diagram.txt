@@ -1,0 +1,42 @@
+@startuml
+
+!include <c4/C4_Context>
+!include <c4/C4_Container>
+!include <c4/C4_Component>
+
+System_Boundary(c1, "CodeExplainer System") {
+    Person(user, "User", "Initiates code analysis and documentation")
+    Container(repo_loader, "RepoLoader", "Loads and parses code repositories", "Python")
+    Container(code_explainer, "CodeExplainer", "Orchestrates code analysis, documentation, and diagram generation", "CrewAI, Python") {
+        Component(software_analyst, "Software Analyst", "Analyzes codebase using LLM", "Python")
+        Component(documentation_writer, "Documentation Writer", "Generates README file", "Python")
+        Component(code_diagramming_agent, "Code Diagramming Agent", "Generates UML diagrams using PlantUML", "Python")
+    }
+
+    Component(PlantUMLDiagramGeneratorTool, "PlantUML Diagram Generator Tool", "Generates UML diagrams", "Python")
+
+    Rel(user, repo_loader, "Provides repository URL or path")
+    Rel(repo_loader, code_explainer, "Provides parsed code data")
+    Rel(code_explainer, software_analyst, "Manages analysis")
+    Rel(code_explainer, documentation_writer, "Manages documentation")
+    Rel(code_explainer, code_diagramming_agent, "Manages diagrams")
+    Rel(software_analyst, documentation_writer, "Provides analysis results")
+    Rel(software_analyst, code_diagramming_agent, "Provides analysis results")
+    Rel(code_diagramming_agent, PlantUMLDiagramGeneratorTool, "Generates diagrams")
+
+    ContainerDb(ltm, "Long-Term Memory", "SQLite", "Stores long-term information")
+    ContainerDb(stm, "Short-Term Memory", "Qdrant", "Stores short-term information")
+    ContainerDb(entity_memory, "Entity Memory", "Qdrant", "Stores information about entities")
+
+    Rel(software_analyst, ltm, "Reads from/Writes to")
+    Rel(software_analyst, stm, "Reads from/Writes to")
+    Rel(software_analyst, entity_memory, "Reads from/Writes to")
+    Rel(documentation_writer, ltm, "Reads from/Writes to")
+    Rel(documentation_writer, stm, "Reads from/Writes to")
+    Rel(documentation_writer, entity_memory, "Reads from/Writes to")
+    Rel(code_diagramming_agent, ltm, "Reads from/Writes to")
+    Rel(code_diagramming_agent, stm, "Reads from/Writes to")
+    Rel(code_diagramming_agent, entity_memory, "Reads from/Writes to")
+}
+
+@enduml

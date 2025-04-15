@@ -1,0 +1,37 @@
+
+@startuml
+actor User
+participant "OrderMgmtSvcImpl" as OrderService
+participant "InventorySvcImpl" as InventoryService
+participant "SupplierSvcImpl" as SupplierService
+participant "CatalogDAO" as CatalogDAO
+
+User -> OrderService: placeOrder(customerId, kit)
+OrderService -> InventoryService: confirmInStock()
+InventoryService -> CatalogDAO: getCatalog()
+CatalogDAO -> CatalogDAO: getBody().getPartId()
+CatalogDAO -> CatalogDAO: getEngine().getPartId()
+CatalogDAO -> CatalogDAO: getPowerSource().getPartId()
+CatalogDAO -> CatalogDAO: getWheels().getPartId()
+
+InventoryService -> InventoryDAO: getNumberInStock(partId)
+InventoryDAO -> InventoryService: numberInStock
+
+alt if numberInStock < 1
+    InventoryService -> OrderService: Insufficient parts
+else
+    InventoryService -> OrderService: Sufficient parts
+    OrderService -> InventoryService: reduceStock()
+    InventoryService -> InventoryDAO: removeFromStock(partId, 1)
+    InventoryService -> InventoryDAO: getNumberInStock(partId)
+    InventoryDAO -> InventoryService: numberInStock
+    
+    alt if numberInStock <= MINIMUM_NUMBER_IN_STOCK_EACH_ITEM
+        InventoryService -> SupplierService: orderSupplies(partId, reorderAmount)
+        SupplierService -> InventoryService: numberSupplied
+        InventoryService -> InventoryDAO: addToStock(partId, numberSupplied)
+    end
+end
+
+OrderService -> User: orderNumber
+@enduml

@@ -1,0 +1,83 @@
+
+@startuml
+
+package com.blckly.controller {
+    [ShoppingController]
+    [CatalogController]
+    [AdminController]
+}
+
+package com.blckly.service {
+    [ExclusivityIntf]
+    [ExclusivityImpl]
+    [CatalogSvcIntf]
+    [CatalogSvcImpl]
+    [InventorySvcIntf]
+    [InventorySvcImpl]
+    [OrderMgmtSvcIntf]
+    [OrderMgmtSvcImpl]
+    [GeoSvcIntf]
+    [GeoSvcImpl]
+    [SupplierSvcIntf]
+    [SupplierSvcImpl]
+}
+
+package com.blckly.dao {
+    [CustomerDAO]
+    [InventoryDAO]
+    [CatalogDAO]
+}
+
+package com.blckly.model {
+    [Order]
+    [Customer]
+    [Catalog]
+    [CarKit]
+    [Part]
+    [Body]
+    [Engine]
+    [Wheel]
+    [PowerSource]
+    [Color]
+    [Finish]
+    [BodyType]
+    [EngineType]
+    [PowerSourceType]
+    [WheelType]
+}
+
+package com.blckly.security {
+    [TokenAuthenticationService]
+    [SecurityConfig]
+}
+
+[ShoppingController] --> [ExclusivityIntf]
+[ShoppingController] --> [CatalogSvcIntf]
+[ShoppingController] --> [OrderMgmtSvcIntf]
+
+[CatalogController] --> [CatalogSvcIntf]
+
+[AdminController] --> [CatalogSvcIntf]
+
+[ExclusivityImpl] --> [ExclusivityIntf]
+[CatalogSvcImpl] --> [CatalogSvcIntf]
+[InventorySvcImpl] --> [InventorySvcIntf]
+[OrderMgmtSvcImpl] --> [OrderMgmtSvcIntf]
+[GeoSvcImpl] --> [GeoSvcIntf]
+[SupplierSvcImpl] --> [SupplierSvcIntf]
+
+[ExclusivityImpl] --> [GeoSvcIntf]
+[ExclusivityImpl] --> [CustomerDAO]
+
+[OrderMgmtSvcImpl] --> [InventorySvcIntf]
+[OrderMgmtSvcImpl] --> [CatalogDAO]
+[OrderMgmtSvcImpl] --> [Order]
+
+[CatalogSvcImpl] --> [CatalogDAO]
+
+[InventorySvcImpl] --> [SupplierSvcIntf]
+[InventorySvcImpl] --> [InventoryDAO]
+
+[TokenAuthenticationService] --> [SecurityConfig]
+
+@enduml

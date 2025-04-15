@@ -1,0 +1,41 @@
+@startuml
+
+!include <c4/C4_Context>
+!include <c4/C4_Container>
+
+System_Boundary(c1, "Data Processing System") {
+    Container(data_processor, "DataProcessor", "Python Application", "Orchestrates data collection, processing, and visualization")
+    Container(data_loader, "DataLoader", "Python Module", "Retrieves and loads data from various sources")
+    Container(report_generator, "ReportGenerator", "Python Tool", "Generates analytical reports")
+    Rel(data_processor, data_loader, "Loads data", "API")
+    Rel(data_processor, report_generator, "Generates reports", "API")
+
+    Container(data_analysis_agent, "Data Analysis Agent", "AI Agent", "Analyzes raw data and extracts insights")
+    Rel(data_processor, data_analysis_agent, "Initiates data analysis", "AI Framework")
+    Container(documentation_agent, "Documentation Agent", "AI Agent", "Creates structured reports")
+    Rel(data_processor, documentation_agent, "Initiates documentation generation", "AI Framework")
+    Container(visualization_agent, "Visualization Agent", "AI Agent", "Generates interactive visualizations")
+    Rel(data_processor, visualization_agent, "Initiates visualization creation", "AI Framework")
+    Rel(visualization_agent, report_generator, "Uses Report Generator", "API")
+}
+
+Person(user, "User", "Requests data analysis and reporting")
+Rel(user, data_processor, "Initiates analysis", "Web Interface")
+
+System_Ext(ai_model, "AI Model", "External AI Engine", "Provides data analysis and predictive capabilities")
+Rel(data_analysis_agent, ai_model, "Uses AI for analysis", "API")
+Rel(documentation_agent, ai_model, "Uses AI for documentation", "API")
+
+System_Ext(data_source, "Data Source", "External Database", "Provides raw data")
+Rel(data_loader, data_source, "Retrieves data", "Database API")
+
+System_Ext(cache_db, "Cache Database", "In-Memory Database", "Stores temporary data")
+Rel(data_processor, cache_db, "Uses for temporary data storage", "API")
+
+System_Ext(storage_db, "Storage Database", "SQL Database", "Stores long-term reports")
+Rel(data_processor, storage_db, "Uses for long-term storage", "API")
+
+System_Ext(dashboard, "Dashboard", "Web UI", "Displays reports and insights")
+Rel(data_processor, dashboard, "Displays results", "API")
+
+@enduml

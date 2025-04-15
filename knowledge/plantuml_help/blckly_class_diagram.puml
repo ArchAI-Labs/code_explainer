@@ -1,0 +1,245 @@
+
+@startuml
+
+package com.blckly {
+    class Application {
+        +main(String[] args)
+    }
+
+    class InventoryDAO {
+        -static Map<Integer, Integer> stock
+        +static int getNumberInStock(int partId)
+        +static void removeFromStock(int partId, int amtToRemove)
+        +static void addToStock(int partId, int amtToAdd)
+    }
+
+    class CatalogDAO {
+        -static final double KIT_BASE_PRICE
+        -static final double KIT_CUSTOMIZATION_SURCHARGE
+        -int lastPartId
+        -static Catalog catalog
+        +static Catalog getCatalog()
+        +void updateKitBasePrice(double kitBasePrice)
+        +void updateSurcharge(double surcharge)
+    }
+
+    class CustomerDAO {
+        -static final List<Customer> customers
+        +static List<Customer> getCustomers()
+        +static Customer getCustomerById(long id)
+    }
+
+    class Order {
+        -long number
+        -long customerId
+        -CarKit kit
+        +Order(long number, long customerId, CarKit kit)
+        +long getNumber()
+        +void setNumber(long number)
+        +long getCustomerId()
+        +void setCustomerId(long customerId)
+        +CarKit getKit()
+        +void setKit(CarKit kit)
+        +int hashCode()
+        +boolean equals(Object obj)
+        +String toString()
+        +static double getTotalCost(Catalog catalog, CarKit targetKit)
+    }
+
+    class Catalog {
+        -double kitBasePrice
+        -double kitSurcharge
+        -Body body
+        -Engine engine
+        -Wheel wheels
+        -PowerSource powerSource
+        +double getKitBasePrice()
+        +void setKitBasePrice(double kitBasePrice)
+        +double getKitSurcharge()
+        +void setKitSurcharge(double kitSurcharge)
+        +Body getBody()
+        +void setBody(Body body)
+        +Engine getEngine()
+        +void setEngine(Engine engine)
+        +Wheel getWheels()
+        +void setWheels(Wheel wheels)
+        +PowerSource getPowerSource()
+        +void setPowerSource(PowerSource powerSource)
+        +int hashCode()
+        +boolean equals(Object obj)
+        +String toString()
+    }
+
+    class CarKit {
+        -String kitName
+        -BodyType bodyType
+        -EngineType engineType
+        -PowerSourceType powerSourceType
+        -Color color
+        -Finish finish
+        -WheelType wheelType
+        +BodyType getBodyType()
+        +void setBodyType(BodyType bodyType)
+        +EngineType getEngineType()
+        +void setEngineType(EngineType engineType)
+        +PowerSourceType getPowerSourceType()
+        +void setPowerSourceType(PowerSourceType powerSourceType)
+        +Color getColor()
+        +void setColor(Color color)
+        +Finish getFinish()
+        +void setFinish(Finish finish)
+        +String getKitName()
+        +void setKitName(String kitName)
+        +WheelType getWheelType()
+        +void setWheelType(WheelType wheelType)
+        +int hashCode()
+        +boolean equals(Object obj)
+        +String toString()
+    }
+
+    class Customer {
+        -long id
+        -String name
+        -Address address
+        +Customer(long id, String name, Address address)
+        +long getId()
+        +void setId(long id)
+        +String getName()
+        +void setName(String name)
+        +Address getAddress()
+        +void setAddress(Address address)
+        +int hashCode()
+        +boolean equals(Object obj)
+        +String toString()
+        
+        class Address {
+            -String street
+            -String city
+            -String state
+            -String zip
+            +Address(String street, String city, String state, String zip)
+            +String getStreet()
+            +void setStreet(String street)
+            +String getCity()
+            +void setCity(String city)
+            +String getState()
+            +void setState(String state)
+            +String getZip()
+            +void setZip(String zip)
+            +int hashCode()
+            +boolean equals(Object obj)
+            +String toString()
+        }
+    }
+
+    class Engine extends Part {
+        -List<EngineType> typeOptions
+        +Engine()
+        +Engine(int partId)
+        +List<EngineType> getTypeOptions()
+    }
+
+    class Body extends Part {
+        -List<Color> colorOptions
+        -List<Finish> finishOptions
+        -List<BodyType> bodyTypeOptions
+        +Body()
+        +Body(int partId)
+        +List<Finish> getFinishOptions()
+        +List<Color> getColorOptions()
+        +List<BodyType> getBodyTypeOptions()
+    }
+
+    class PowerSource extends Part {
+        -List<PowerSourceType> typeOptions
+        +PowerSource()
+        +PowerSource(int partId)
+        +List<PowerSourceType> getTypeOptions()
+    }
+
+    class Wheel extends Part {
+        -List<WheelType> typeOptions
+        +Wheel()
+        +Wheel(int partId)
+        +List<WheelType> getTypeOptions()
+    }
+
+    enum Color {
+        WHITE
+        RED
+        YELLOW
+        BLUE
+        +String getColor()
+        +static Color getDefault()
+    }
+
+    enum Finish {
+        FLAT
+        MATTE
+        +String getFinish()
+        +static Finish getDefault()
+    }
+
+    enum BodyType {
+        BASIC
+        SPORT
+        SEDAN
+        MONSTER_TRUCK
+        +String getBody()
+        +static BodyType getDefault()
+    }
+
+    enum EngineType {
+        FOUR_CYL
+        SIX_CYL
+        EIGHT_CYL
+        TEN_CYL
+        +String getEngType()
+        +static EngineType getDefault()
+    }
+
+    enum PowerSourceType {
+        BATTERY
+        RECHARGEABLE_BATTERY
+        GAS
+        NITRO
+        +String getPowerSource()
+        +static PowerSourceType getDefault()
+    }
+
+    enum WheelType {
+        STEEL
+        ALLOY
+        ALUMINUM
+        +String getWheelType()
+        +static WheelType getDefault()
+    }
+
+    abstract class Part {
+        -int partId
+        +Part()
+        +Part(int partId)
+        +int getPartId()
+        +void setPartId(int partId)
+        +int hashCode()
+        +boolean equals(Object obj)
+        +String toString()
+    }
+
+    Catalog *-- Body
+    Catalog *-- Engine
+    Catalog *-- Wheel
+    Catalog *-- PowerSource
+
+    Customer "1" --> "1..*" Order : places
+    Order "1" --> "1" CarKit
+
+    CarKit --> BodyType
+    CarKit --> EngineType
+    CarKit --> PowerSourceType
+    CarKit --> Color
+    CarKit --> Finish
+    CarKit --> WheelType
+}
+
+@enduml

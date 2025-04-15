@@ -1,0 +1,308 @@
+
+@startuml
+package com.blckly {
+    class Application {
+        +void main(String[] args)
+    }
+
+    package dao {
+        class InventoryDAO {
+            -Map<Integer, Integer> stock
+            +int getNumberInStock(int partId)
+            +void removeFromStock(int partId, int amtToRemove)
+            +void addToStock(int partId, int amtToAdd)
+        }
+
+        class CatalogDAO {
+            -double KIT_BASE_PRICE
+            -double KIT_CUSTOMIZATION_SURCHARGE
+            -int lastPartId
+            -Catalog catalog
+            +Catalog getCatalog()
+            +void updateKitBasePrice(double kitBasePrice)
+            +void updateSurcharge(double surcharge)
+        }
+
+        class CustomerDAO {
+            -List<Customer> customers
+            +List<Customer> getCustomers()
+            +Customer getCustomerById(long id)
+        }
+    }
+
+    package model {
+        class Catalog {
+            +double kitBasePrice
+            +double kitSurcharge
+            +Body body
+            +Engine engine
+            +Wheel wheels
+            +PowerSource powerSource
+            +double getKitBasePrice()
+            +void setKitBasePrice(double kitBasePrice)
+            +double getKitSurcharge()
+            +void setKitSurcharge(double kitSurcharge)
+        }
+
+        class Body extends Part {
+            +List<Color> colorOptions
+            +List<Finish> finishOptions
+            +List<BodyType> bodyTypeOptions
+            +List<Finish> getFinishOptions()
+            +List<Color> getColorOptions()
+            +List<BodyType> getBodyTypeOptions()
+        }
+
+        class Engine extends Part {
+            +List<EngineType> typeOptions
+            +List<EngineType> getTypeOptions()
+        }
+
+        class Wheel extends Part {
+            +List<WheelType> typeOptions
+            +List<WheelType> getTypeOptions()
+        }
+
+        class PowerSource extends Part {
+            +List<PowerSourceType> typeOptions
+            +List<PowerSourceType> getTypeOptions()
+        }
+
+        class Part {
+            +int partId
+            +int getPartId()
+            +void setPartId(int partId)
+        }
+
+        class CarKit {
+            +String kitName
+            +BodyType bodyType
+            +EngineType engineType
+            +PowerSourceType powerSourceType
+            +Color color
+            +Finish finish
+            +WheelType wheelType
+            +BodyType getBodyType()
+            +void setBodyType(BodyType bodyType)
+            +EngineType getEngineType()
+            +void setEngineType(EngineType engineType)
+            +PowerSourceType getPowerSourceType()
+            +void setPowerSourceType(PowerSourceType powerSourceType)
+            +Color getColor()
+            +void setColor(Color color)
+            +Finish getFinish()
+            +void setFinish(Finish finish)
+            +String getKitName()
+            +void setKitName(String kitName)
+            +WheelType getWheelType()
+            +void setWheelType(WheelType wheelType)
+        }
+
+        class Customer {
+            +long id
+            +String name
+            +Address address
+            +long getId()
+            +void setId(long id)
+            +String getName()
+            +void setName(String name)
+            +Address getAddress()
+            +void setAddress(Address address)
+        }
+
+        class Order {
+            +long number
+            +long customerId
+            +CarKit kit
+            +long getNumber()
+            +void setNumber(long number)
+            +long getCustomerId()
+            +void setCustomerId(long customerId)
+            +CarKit getKit()
+            +void setKit(CarKit kit)
+            +static double getTotalCost(Catalog catalog, CarKit targetKit)
+        }
+
+        enum Finish {
+            FLAT, MATTE
+            +String getFinish()
+            +static Finish getDefault()
+        }
+
+        enum Color {
+            WHITE, RED, YELLOW, BLUE
+            +String getColor()
+            +static Color getDefault()
+        }
+
+        enum BodyType {
+            BASIC, SPORT, SEDAN, MONSTER_TRUCK
+            +String getBody()
+            +static BodyType getDefault()
+        }
+
+        enum EngineType {
+            FOUR_CYL, SIX_CYL, EIGHT_CYL, TEN_CYL
+            +String getEngType()
+            +static EngineType getDefault()
+        }
+
+        enum WheelType {
+            STEEL, ALLOY, ALUMINUM
+            +String getWheelType()
+            +static WheelType getDefault()
+        }
+
+        enum PowerSourceType {
+            BATTERY, RECHARGEABLE_BATTERY, GAS, NITRO
+            +String getPowerSource()
+            +static PowerSourceType getDefault()
+        }
+
+        class Address {
+            +String street
+            +String city
+            +String state
+            +String zip
+            +String getStreet()
+            +void setStreet(String street)
+            +String getCity()
+            +void setCity(String city)
+            +String getState()
+            +void setState(String state)
+            +String getZip()
+            +void setZip(String zip)
+        }
+    }
+
+    package service {
+        interface ExclusivityIntf {
+            +boolean isKitExclusive(Customer customer, CarKit kit, List<Order> otherOrders)
+        }
+
+        class ExclusivityImpl implements ExclusivityIntf {
+            +GeoSvcIntf geoService
+            +boolean isKitExclusive(Customer customer, CarKit kit, List<Order> otherOrders)
+        }
+
+        interface CatalogSvcIntf {
+            +Catalog getCatalog()
+            +void updateKitBasePrice(double kitBasePrice)
+            +void updateSurcharge(double surcharge)
+        }
+
+        class CatalogSvcImpl implements CatalogSvcIntf {
+            +Catalog getCatalog()
+            +void updateKitBasePrice(double kitBasePrice)
+            +void updateSurcharge(double surcharge)
+        }
+
+        interface InventorySvcIntf {
+            +int getNumberInStock(int partId)
+            +void removeFromStock(int partId, int amtToRemove)
+        }
+
+        class InventorySvcImpl implements InventorySvcIntf {
+            +SupplierSvcIntf supplierSvc
+            +int getNumberInStock(int partId)
+            +void removeFromStock(int partId, int amtToRemove)
+        }
+
+        interface OrderMgmtSvcIntf {
+            +long placeOrder(Long customerId, CarKit kit)
+            +List<Order> getExistingOrders()
+        }
+
+        class OrderMgmtSvcImpl implements OrderMgmtSvcIntf {
+            +InventorySvcIntf inventorySvc
+            +long placeOrder(Long customerId, CarKit kit)
+            +List<Order> getExistingOrders()
+        }
+
+        interface SupplierSvcIntf {
+            +int orderSupplies(int partId, int amtToSupply)
+        }
+
+        class SupplierSvcImpl implements SupplierSvcIntf {
+            +int orderSupplies(int partId, int amtToSupply)
+        }
+
+        interface GeoSvcIntf {
+            +float getDistance(String addr1, String addr2)
+        }
+
+        class GeoSvcImpl implements GeoSvcIntf {
+            +float getDistance(String addr1, String addr2)
+        }
+    }
+
+    package security {
+        class TokenAuthenticationService {
+            +void addAuthentication(HttpServletResponse res, String username)
+            +Authentication getAuthentication(HttpServletRequest request)
+        }
+
+        class SecurityConfig extends WebSecurityConfigurerAdapter {
+            +void configure(HttpSecurity http)
+            +void configure(AuthenticationManagerBuilder auth)
+        }
+
+        class AccountCredentials {
+            +String username
+            +String password
+        }
+
+        class JWTAuthenticationFilter extends GenericFilterBean {
+            +void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain)
+        }
+
+        class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
+            +Authentication attemptAuthentication(HttpServletRequest req, HttpServletResponse res)
+            +void successfulAuthentication(HttpServletRequest req, HttpServletResponse res, FilterChain chain, Authentication auth)
+        }
+    }
+
+    package controller {
+        class ShoppingController {
+            +BooleanResponse isKitExclusive(Long customerId, CarKit kit)
+            +Double computeOrderTotal(CarKit kit)
+            +ResponseEntity<?> orderKit(Long customerId, CarKit kit)
+        }
+
+        class CatalogController {
+            +ResponseEntity<Catalog> getCatalog()
+        }
+
+        class AdminController {
+            +ResponseEntity<?> updateKitBasePrice(Double newPrice)
+            +ResponseEntity<?> updateSurcharge(Double newSurcharge)
+        }
+    }
+}
+
+dao.InventoryDAO --> model.Catalog
+dao.CatalogDAO --> model.Catalog
+dao.CustomerDAO --> model.Customer
+
+controller.ShoppingController --> service.ExclusivityIntf
+controller.ShoppingController --> service.CatalogSvcIntf
+controller.ShoppingController --> service.OrderMgmtSvcIntf
+
+service.ExclusivityImpl --> service.GeoSvcIntf
+
+service.CatalogSvcImpl --> dao.CatalogDAO
+
+service.InventorySvcImpl --> service.SupplierSvcIntf
+
+service.OrderMgmtSvcImpl --> service.InventorySvcIntf
+
+security.TokenAuthenticationService --> security.JWTAuthenticationFilter
+security.TokenAuthenticationService --> security.JWTLoginFilter
+
+security.SecurityConfig --> security.TokenAuthenticationService
+security.SecurityConfig --> security.AccountCredentials
+
+security.JWTAuthenticationFilter --> security.TokenAuthenticationService
+
+security.JWTLoginFilter --> security.AccountCredentials
+@enduml
