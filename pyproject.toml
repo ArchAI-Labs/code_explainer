@@ -17,7 +17,7 @@ dependencies = [
     "qdrant-client[fastembed]",
     "fitz",
     "pymupdf",
-    "javalang"
+    "javalang",
     "streamlit"
 
 ]
