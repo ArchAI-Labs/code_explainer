@@ -1,0 +1,10 @@
+.env
+uv.lock
+__pycache__/
+.idea/
+.pytest_cache/
+.venv/
+.vscode/
+memory/
+repos/
+qdrant_storage/
