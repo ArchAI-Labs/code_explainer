@@ -7,9 +7,9 @@
 <br>
 
 ## Overview
-The ArchAI project is designed to automatically analyze, document, and visualize codebases. It serves as a comprehensive tool for developers, architects, and stakeholders seeking to understand the structure, quality, and functionality of software projects. Unlike a simple code linter or documentation generator, the ArchAI leverages AI agents orchestrated by the CrewAI framework to provide a holistic view of a codebase. This includes cloning repositories, parsing code in multiple languages, generating PlantUML diagrams, and integrating with SonarQube for code quality analysis. The project aims to reduce the manual effort required to understand and maintain complex software systems by providing automated insights and documentation.
+The ArchAI - CodeExplainer project is designed to automatically analyze, document, and visualize codebases. It serves as a comprehensive tool for developers, architects, and stakeholders seeking to understand the structure, quality, and functionality of software projects. Unlike a simple code linter or documentation generator, the ArchAI leverages AI agents orchestrated by the CrewAI framework to provide a holistic view of a codebase. This includes cloning repositories, parsing code in multiple languages, generating PlantUML diagrams, and integrating with SonarQube for code quality analysis. The project aims to reduce the manual effort required to understand and maintain complex software systems by providing automated insights and documentation.
 
-This repository contains the core logic for the ArchAI, defining the agents, tasks, and tools used in the analysis process. The modules within this repository are responsible for:
+This repository contains the core logic for the CodeExplainer, defining the agents, tasks, and tools used in the analysis process. The modules within this repository are responsible for:
 
 *   **Repository Loading:** Cloning and parsing source code files.
 *   **Code Analysis:** Utilizing AI agents to understand the code's structure and functionality.
@@ -63,7 +63,7 @@ crewai install
 *	`QDRANT_HOST`: The Qdrant host (required for cloud mode).
 *	`QDRANT_API_KEY`: The Qdrant API key (required for cloud mode).
 *	`QDRANT_URL`: The Qdrant URL (required for docker mode).
-*	`EMBEDDER`: The embedding model to use (e.g., `jinaai/jina-embeddings-v2-base-code`).
+*	`EMBEDDER`: The embedding model (supported by FastEmbed) to use (e.g., `jinaai/jina-embeddings-v2-base-code`).
 
 ## Running the Project
 
@@ -73,7 +73,7 @@ To kickstart your crew of AI agents and begin task execution, run this from the 
 $ streamlit run ./streamlit_app.py
 ```
 
-This command initializes the ArchAI Crew, assembling the agents and assigning them tasks as defined in your configuration.
+This command initializes the CodeExplainer Crew, assembling the agents and assigning them tasks as defined in your configuration.
 
 Follow the instructions.
 
@@ -144,7 +144,7 @@ $ ollama serve
 
 ## Understanding Your Crew
 
-The ArchAI Crew is composed of multiple AI agents, each with unique roles, goals, and tools. These agents collaborate on a series of tasks, defined in `config/tasks.yaml`, leveraging their collective skills to achieve complex objectives. The `config/agents.yaml` file outlines the capabilities and configurations of each agent in your crew.
+The ArchAI - CodeExplainer Crew is composed of multiple AI agents, each with unique roles, goals, and tools. These agents collaborate on a series of tasks, defined in `config/tasks.yaml`, leveraging their collective skills to achieve complex objectives. The `config/agents.yaml` file outlines the capabilities and configurations of each agent in your crew.
 
 ### Technology Stack
 The project employs a diverse set of technologies, frameworks, and libraries that enhance its functionality and capability. 
@@ -154,6 +154,7 @@ The project employs a diverse set of technologies, frameworks, and libraries tha
 - **Frameworks:** 
   - [crewAI](https://crewai.com) - This framework underpins the orchestration of agents and processes, allowing for effective management of tasks and facilitating collaboration between different components of the system.
   - [Qdrant](https://qdrant.tech/) - Qdrant is the most advanced vector database with highest RPS, minimal latency, fast indexing, high control with accuracy, and so much more.
+  - [FastEmbed](https://qdrant.github.io/fastembed/) - FastEmbed is a lightweight, fast, Python library built for efficient and lightweight embedding without compromising on performance.
 
 - **Libraries:**
   - **dotenv:** Utilized for managing environment variables, extracting configuration data from a `.env` file, which aids in flexible deployment.
@@ -226,7 +227,7 @@ The project adheres to a structured directory layout, enabling ease of navigatio
 
 ### 1. Main Responsibilities of the System
 
-The primary responsibility of the ArchAI is to automate the process of understanding and documenting codebases. It orchestrates a series of tasks, including:
+The primary responsibility of the ArchAI - CodeExplainer is to automate the process of understanding and documenting codebases. It orchestrates a series of tasks, including:
 
 *   **Code Acquisition:** Cloning remote Git repositories or loading local code.
 *   **Code Parsing:** Analyzing source code files to extract relevant information.
@@ -238,7 +239,7 @@ The system provides foundational services for code understanding by automating t
 
 ### 2. Problems the System Solves
 
-The ArchAI addresses several key challenges in software development:
+The ArchAI - CodeExplainer addresses several key challenges in software development:
 
 *   **Onboarding new developers:** Reduces the time required for new team members to understand a codebase.
 *   **Understanding legacy code:** Provides insights into the structure and functionality of older systems.
@@ -250,13 +251,13 @@ The system meets these needs by providing automated analysis, documentation, and
 
 ### 3. Interaction of Modules and Components
 
-The ArchAI utilizes a CrewAI framework to orchestrate the interactions between different modules and components. The `CodeExplainer` class defines the agents, tasks, and workflow for the analysis process. The agents communicate and collaborate through tasks, with each agent responsible for a specific aspect of the analysis.
+The ArchAI - CodeExplainer utilizes a CrewAI framework to orchestrate the interactions between different modules and components. The `CodeExplainer` class defines the agents, tasks, and workflow for the analysis process. The agents communicate and collaborate through tasks, with each agent responsible for a specific aspect of the analysis.
 
 The `RepoLoader` module provides code to the agents. The `SonarQubeTool` fetches code quality metrics, which are then used by the agents to generate documentation and diagrams. The `PlantUMLDiagramGeneratorTool` generates diagrams based on the analysis performed by the agents.
 
 ### 4. User-Facing vs. System-Facing Functionalities
 
-The ArchAI provides both user-facing and system-facing functionalities:
+The ArchAI - CodeExplainer provides both user-facing and system-facing functionalities:
 
 *   **User-Facing:**
     *   **Generated Documentation:** The primary user-facing output is the generated documentation, which provides a human-readable description of the codebase.
@@ -269,7 +270,7 @@ The ArchAI provides both user-facing and system-facing functionalities:
 The user-facing functionalities provide value to developers and stakeholders by providing insights into the codebase, while the system-facing functionalities enable the automated analysis and documentation process.
 
 ## Architectural Patterns and Design Principles
-The design of the ArchAI project incorporates several architectural patterns that contribute to its robustness and maintainability.
+The design of the ArchAI - CodeExplainer project incorporates several architectural patterns that contribute to its robustness and maintainability.
 
 1. **Decorator Pattern**: This pattern is utilized extensively in defining agents and tasks, streamlining the process of organizing tasks into actionable units with clear responsibilities.
 
@@ -289,18 +290,18 @@ The following items represent potential areas for improvement and future develop
 *    **Enhance Test Coverage:** Increase test coverage for the core modules, particularly the `RepoLoader`, `PlantUMLDiagramGeneratorTool`, and `SonarqubeTool` classes.
 *    **Improve Configuration Management:** Implement a more robust configuration management system, potentially using a library like `ConfigParser` or `Hydra`.
 *    **Add Support for More Languages:** Expand the code parsing functionality to support additional programming languages.
-*    **Implement a UI:** Develop a user interface for the ArchAI to make it more accessible to non-technical users.
+*    **Implement a UI:** Develop a user interface for the CodeExplainer to make it more accessible to non-technical users.
 *    **Refactor Complex Modules:** Identify and refactor complex modules to improve maintainability and readability.
 *    **Address High-Priority Security Vulnerabilities:** If SonarQube reports high-priority security vulnerabilities, address them promptly.
 
-Overall, the ArchAI project provides a structured and detailed approach to codebase analysis and documentation, while also presenting a solid foundation for further improvements that could enhance its usability and robustness.
+Overall, the ArchAI - CodeExplainer project provides a structured and detailed approach to codebase analysis and documentation, while also presenting a solid foundation for further improvements that could enhance its usability and robustness.
 
 ## Further Areas of Investigation
 
 The following areas warrant further investigation and analysis:
 
 *   **Performance Bottlenecks:** Identify and address potential performance bottlenecks, particularly in the code parsing and diagram generation processes.
-*   **Scalability Considerations:** Evaluate the scalability of the ArchAI and identify potential limitations.
+*   **Scalability Considerations:** Evaluate the scalability of the ArchAI - CodeExplainer and identify potential limitations.
 *   **Integration with External Systems:** Explore potential integrations with other external systems, such as code review tools or CI/CD pipelines.
 *   **Advanced Features:** Research and implement advanced features, such as code smell detection or automated refactoring suggestions.
 *   **Codebase Analysis:** Perform a deeper analysis of the codebase to identify areas with significant code smells or low test coverage.
