@@ -63,7 +63,7 @@ crewai install
 *	`QDRANT_HOST`: The Qdrant host (required for cloud mode).
 *	`QDRANT_API_KEY`: The Qdrant API key (required for cloud mode).
 *	`QDRANT_URL`: The Qdrant URL (required for docker mode).
-*	`EMBEDDER`: The embedding model to use (e.g., `jinaai/jina-embeddings-v2-base-code`).
+*	`EMBEDDER`: The embedding model (supported by FastEmbed) to use (e.g., `jinaai/jina-embeddings-v2-base-code`).
 
 ## Running the Project
 
@@ -154,6 +154,7 @@ The project employs a diverse set of technologies, frameworks, and libraries tha
 - **Frameworks:** 
   - [crewAI](https://crewai.com) - This framework underpins the orchestration of agents and processes, allowing for effective management of tasks and facilitating collaboration between different components of the system.
   - [Qdrant](https://qdrant.tech/) - Qdrant is the most advanced vector database with highest RPS, minimal latency, fast indexing, high control with accuracy, and so much more.
+  - [FastEmbed](https://qdrant.github.io/fastembed/) - FastEmbed is a lightweight, fast, Python library built for efficient and lightweight embedding without compromising on performance.
 
 - **Libraries:**
   - **dotenv:** Utilized for managing environment variables, extracting configuration data from a `.env` file, which aids in flexible deployment.
