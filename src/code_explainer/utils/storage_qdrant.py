@@ -14,7 +14,7 @@ class QdrantStorage(RAGStorage):
     def __init__(self, type, allow_reset=True, embedder_config=None, crew=None):
         super().__init__(type, allow_reset, embedder_config, crew)
 
-    def search(
+    def query_points(
         self,
         query: str,
         limit: int = 3,
@@ -27,7 +27,7 @@ class QdrantStorage(RAGStorage):
             query_filter=filter,
             limit=limit,
             score_threshold=score_threshold,
-        )
+        ).points
         results = [
             {
                 "id": point.id,
