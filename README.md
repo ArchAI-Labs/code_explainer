@@ -54,15 +54,16 @@ crewai install
 * `SONARQUBE_TOKEN`: The SonarQube API token (optional).
 *	`PROVIDER`: The LLM provider (e.g., `openai`, `google`, `ollama`).
 *	`MODEL`: The LLM model to use (e.g., `gpt-4`, `gemini-1.5-pro`, `llama2`).
+*	`GEMINI_API_KEY` or `OPENAI_API_KEY` or `ANTHROPIC_API_KEY`: The API KEY to use (follow the `.env.example`).
+*	`BASE_URL`: The LLM base URL (optional, required for ollama).
 *	`TEMPERATURE`: The LLM temperature (optional).
 *	`MAX_TOKENS`: The LLM max tokens (optional).
 *	`TIMEOUT`: The LLM timeout (optional).
-*	`BASE_URL`: The LLM base URL (optional, required for ollama).
 *	`QDRANT_MODE`: The Qdrant mode (e.g., `memory`, `cloud`, `docker`).
 *	`QDRANT_HOST`: The Qdrant host (required for cloud mode).
 *	`QDRANT_API_KEY`: The Qdrant API key (required for cloud mode).
 *	`QDRANT_URL`: The Qdrant URL (required for docker mode).
-*	`EMBEDDER`: The embedding model to use (e.g., `sentence-transformers/all-MiniLM-L6-v2`).
+*	`EMBEDDER`: The embedding model to use (e.g., `jinaai/jina-embeddings-v2-base-code`).
 
 ## Running the Project
 
