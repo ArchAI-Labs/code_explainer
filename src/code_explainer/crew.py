@@ -89,7 +89,7 @@ class CodeExplainer:
         return Agent(
             config=self.agents_config["code_diagramming_agent"],
             verbose=True,
-            max_iter=15,
+            max_iter=5,
             allow_delegation=False,
             memory=True,
             llm=self.llm,
