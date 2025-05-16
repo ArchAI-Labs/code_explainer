@@ -46,7 +46,7 @@ crewai install
 
 * `REPOSITORY_URL`: The URL of the Git repository to analyze.
 * `LOCAL_DIR`: The local directory where the repository will be cloned.
-* `OUTPUT_DIR`: The directory where the generated documentation and diagrams will be saved.
+* `OUTPUT_DIR`: The directory where the generated documentation and diagrams will be saved (optional - if you set it in `.env` overwrite your setting in streamlit).
 * `DIAGRAM_TYPE`: The type of diagram to generate (e.g., `component`, `class`, `sequence`, `all`).
 * `DIAGRAM_FORMAT`: The output format for the diagrams (e.g., `svg`, `uml`, `png`).
 * `SONARQUBE_URL`: The URL of the SonarQube server (optional).
