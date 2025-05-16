@@ -44,11 +44,11 @@ crewai install
 
 **Create an `.env` file in the project root (use `.env.example` as template) and define the following variables:**
 
-* `REPOSITORY_URL`: The URL of the Git repository to analyze.
-* `LOCAL_DIR`: The local directory where the repository will be cloned.
-* `OUTPUT_DIR`: The directory where the generated documentation and diagrams will be saved (optional - if you set it in `.env` overwrite your setting in streamlit).
-* `DIAGRAM_TYPE`: The type of diagram to generate (e.g., `component`, `class`, `sequence`, `all`).
-* `DIAGRAM_FORMAT`: The output format for the diagrams (e.g., `svg`, `uml`, `png`).
+* `REPOSITORY_URL`: The URL of the Git repository to analyze (optional - *if you set it in `.env` overwrite your setting in streamlit*).
+* `LOCAL_DIR`: The local directory where the repository will be cloned (optional - *if you set it in `.env` overwrite your setting in streamlit*).
+* `OUTPUT_DIR`: The directory where the generated documentation and diagrams will be saved (optional - *if you set it in `.env` overwrite your setting in streamlit*).
+* `DIAGRAM_TYPE`: The type of diagram to generate (e.g., `component`, `class`, `sequence`, `all`) (optional - *if you set it in `.env` overwrite your setting in streamlit*).
+* `DIAGRAM_FORMAT`: The output format for the diagrams (e.g., `svg`, `uml`, `png`) (optional - *if you set it in `.env` overwrite your setting in streamlit*).
 * `SONARQUBE_URL`: The URL of the SonarQube server (optional).
 * `SONARQUBE_PROJECT`: The SonarQube project key (optional).
 * `SONARQUBE_TOKEN`: The SonarQube API token (optional).
