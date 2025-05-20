@@ -46,7 +46,7 @@ def LLM_Config(provider:str,
                base_url:Optional[str]=None, 
                callbacks:List[Any] = []):
     ## Manage LLMs
-    if provider in ["openai", "google", "anthropic"]:
+    if provider in ["openai", "google", "anthropic", "groq"]:
         llm = LLM(
             model=model,
             temperature=float(temperature),  # Adjust based on task

@@ -120,7 +120,7 @@ with st.sidebar:
 
 
     st.subheader("LLM Setup")
-    llm_provider = st.selectbox("Provider:", ["anthropic", "google", "openai", "ollama"], index=1)
+    llm_provider = st.selectbox("Provider:", ["anthropic", "google", "openai", "ollama", "groq"], index=1)
     llm_model = st.text_input("Model:", value=os.getenv("MODEL", ""))
     llm_base_url = st.text_input("Base URL (optional):", value=os.getenv("BASE_URL", ""))
     default_temperature = float(os.getenv("TEMPERATURE", "0.7"))
