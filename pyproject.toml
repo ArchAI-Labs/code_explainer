@@ -13,6 +13,7 @@ dependencies = [
     "tree-sitter-languages==1.10.2",
     "panel==1.6.0",
     "google-generativeai",
+    "groq==0.25.0",
     "pytest",
     "qdrant-client[fastembed]",
     "fitz",
