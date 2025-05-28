@@ -78,8 +78,16 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+
 # Funzione per eseguire il crew
-def run_crew(repository_url, local_path, diagram_type, output_format, sonarqube_url, sonarqube_project, sonarqube_token, llm_config, local_dir, output_dir):
+def run_crew(repository_url, local_path, diagram_type, output_format, sonarqube_url, sonarqube_project, sonarqube_token,
+             llm_config, local_dir, output_dir):
+    os.environ["PROVIDER"] = llm_config["provider"]
+    os.environ["MODEL"] = llm_config["model"]
+    os.environ["BASE_URL"] = llm_config["base_url"]
+    os.environ["TEMPERATURE"] = str(llm_config["temperature"])
+    os.environ["MAX_TOKENS"] = str(llm_config["max_tokens"])
+    os.environ["TIMEOUT"] = str(llm_config["timeout"])
     os.environ["REPOSITORY_URL"] = repository_url if repository_url else ""
     os.environ["LOCAL_PATH"] = local_path if local_path else ""
     os.environ["DIAGRAM_TYPE"] = diagram_type
@@ -102,11 +110,13 @@ def run_crew(repository_url, local_path, diagram_type, output_format, sonarqube_
         documentation_path = os.path.join(output_dir, "README.md")
         return documentation_path, diagram_path
     except ImportError:
-        st.error("Error: Unable to import 'run' function from src.code_explainer.main.py. Make sure the path is correct.")
+        st.error(
+            "Error: Unable to import 'run' function from src.code_explainer.main.py. Make sure the path is correct.")
         return None, None
     except Exception as e:
         st.error(f"An error occurred during the execution of the crew: {e}")
         return None, None
+
 
 st.image(LOGO_PATH, width=200)
 st.title("ArchAI")
@@ -118,9 +128,8 @@ with st.sidebar:
     local_dir = st.text_input("Local Working Path:", value=os.getenv("LOCAL_DIR", "./"))
     output_dir = st.text_input("Output Directory Path:", value=os.getenv("OUTPUT_DIR", "output/"))
 
-
     st.subheader("LLM Setup")
-    llm_provider = st.selectbox("Provider:", ["anthropic", "google", "openai", "ollama", "groq"], index=1)
+    llm_provider = st.selectbox("Provider:", ["anthropic", "google", "openai", "ollama"], index=1)
     llm_model = st.text_input("Model:", value=os.getenv("MODEL", ""))
     llm_base_url = st.text_input("Base URL (optional):", value=os.getenv("BASE_URL", ""))
     default_temperature = float(os.getenv("TEMPERATURE", "0.7"))
@@ -175,7 +184,17 @@ if use_sonarqube:
         st.warning("Please provide the URL of SonarQube.")
 
 # Execution
+KEY_ENV = {
+    "anthropic": "ANTHROPIC_API_KEY",
+    "google": "GEMINI_API_KEY",
+    "openai": "OPENAI_API_KEY",
+}
 if st.button("Run ArchAI"):
+    provider = llm_config["provider"].lower()
+    key_var = KEY_ENV.get(provider)
+    if key_var and not os.getenv(key_var):
+        st.error(f" Define your `{key_var}` for use this model.")
+        st.stop()
     if repository_url or local_path:
         with st.spinner("ArchAI execution in progress..."):
             doc_path, diagram_path = run_crew(
@@ -191,8 +210,6 @@ if st.button("Run ArchAI"):
                 output_dir,
             )
 
-
-
         # Visualization
         st.subheader("Results")
         if doc_path and os.path.exists(doc_path):
@@ -201,25 +218,25 @@ if st.button("Run ArchAI"):
                 documentation_content = f.read()
 
             st.markdown(
-                    f'<div class="markdown-box">{documentation_content}</div>',
-                    unsafe_allow_html=True,
-                )
+                f'<div class="markdown-box">{documentation_content}</div>',
+                unsafe_allow_html=True,
+            )
 
 
         elif doc_path:
             st.warning("The documentation file could not be found.")
-        
-        diagram_path = output_dir+diagram_type+"_diagram."+output_format
+
+        diagram_path = output_dir + diagram_type + "_diagram." + output_format
 
         if diagram_path and os.path.exists(diagram_path):
             st.markdown("### Diagram Generated:")
             if output_format == "svg":
-                if diagram_type!="all":
+                if diagram_type != "all":
                     st.info(f"Diagram in svg format available here: {diagram_path}")
                 else:
                     st.info(f"Diagrams in svg format available here: {output_dir}")
             elif output_format == "png":
-                if diagram_type!="all":
+                if diagram_type != "all":
                     try:
                         st.image(diagram_path, caption=f"Diagram ({diagram_type})", use_container_width=True)
                     except Exception as e:
@@ -227,8 +244,8 @@ if st.button("Run ArchAI"):
 
                 else:
                     st.info(f"Diagrams in png format available here: {output_dir}")
-            elif  output_format == "uml": # uml
-                if diagram_type!="all":
+            elif output_format == "uml":  # uml
+                if diagram_type != "all":
                     st.info(f"Diagram in UML format available here: {diagram_path}")
                 else:
                     st.info(f"Diagrams in UML format available here: {output_dir}")
