@@ -129,7 +129,7 @@ with st.sidebar:
     output_dir = st.text_input("Output Directory Path:", value=os.getenv("OUTPUT_DIR", "output/"))
 
     st.subheader("LLM Setup")
-    llm_provider = st.selectbox("Provider:", ["anthropic", "google", "openai", "ollama"], index=1)
+    llm_provider = st.selectbox("Provider:", ["anthropic", "google", "groq", "ollama", "openai"], index=1)
     llm_model = st.text_input("Model:", value=os.getenv("MODEL", ""))
     llm_base_url = st.text_input("Base URL (optional):", value=os.getenv("BASE_URL", ""))
     default_temperature = float(os.getenv("TEMPERATURE", "0.7"))
@@ -188,6 +188,7 @@ KEY_ENV = {
     "anthropic": "ANTHROPIC_API_KEY",
     "google": "GEMINI_API_KEY",
     "openai": "OPENAI_API_KEY",
+    "groq": "GROQ_API_KEY",
 }
 if st.button("Run ArchAI"):
     provider = llm_config["provider"].lower()
