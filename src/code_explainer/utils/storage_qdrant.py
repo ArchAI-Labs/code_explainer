@@ -4,6 +4,9 @@ import os
 from crewai.memory.storage.rag_storage import RAGStorage
 from qdrant_client import QdrantClient
 
+import warnings
+warnings.filterwarnings("ignore", category=DeprecationWarning, module="qdrant_client")
+
 
 class QdrantStorage(RAGStorage):
     """
