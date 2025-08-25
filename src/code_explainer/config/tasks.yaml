@@ -1,13 +1,246 @@
+batch_analysis_task:
+  description: >
+    Execute a comprehensive, distributed analysis of a large-scale codebase by coordinating the systematic processing of {total_chunks} code chunks.
+            
+            **Core Responsibilities:**
+            
+            For each chunk in {code_chunks}, perform the following analytical sequence:
+            
+            1. **Deep Chunk Analysis**: 
+               - Conduct thorough static analysis of code structure, patterns, and relationships
+               - Identify architectural patterns, design principles, and coding standards
+               - Map component dependencies and inter-module communications
+               - Assess code quality metrics and technical debt indicators
+            
+            2. **Cross-Chunk Context Tracking**:
+               - Maintain awareness of previously analyzed chunks to identify recurring patterns
+               - Track architectural themes and design consistency across the codebase
+               - Identify potential integration points and dependency chains
+               - Monitor for architectural anti-patterns and inconsistencies
+            
+            3. **Progressive Knowledge Synthesis**:
+               - Build an evolving understanding of the overall system architecture
+               - Correlate findings across chunks to identify system-wide patterns
+               - Maintain a running inventory of components, their roles, and relationships
+               - Document emerging insights about the codebase's architectural philosophy
+            
+            **Available Context:**
+            - `code_chunks`: Structured collection of tokenized code segments with metadata
+            - `total_chunks`: Total number of chunks for progress tracking and completion validation
+            - `chunk_metadata`: File paths, token counts, and relationship indicators for each chunk
+            
+            **Quality Assurance Requirements:**
+            - Ensure consistent analytical depth across all chunks
+            - Validate that no critical architectural elements are overlooked
+            - Maintain coherence between chunk-level findings and system-level insights
+            - Provide progress indicators and intermediate validation checkpoints
+  expected_output: >
+    **Comprehensive Architectural Analysis Report** containing:
+
+            **1. Executive Architecture Summary**
+            - High-level system architecture overview with primary architectural patterns identified
+            - Technology stack analysis and framework utilization assessment
+            - Overall code organization philosophy and structural principles
+
+            **2. Component Inventory & Responsibility Matrix**
+            - Detailed catalog of all major components, modules, and packages
+            - Clear responsibility assignments and component interaction mappings
+            - Identification of core business logic, infrastructure, and utility components
+
+            **3. Architectural Pattern Analysis**
+            - Comprehensive identification of design patterns (Singleton, Factory, Observer, etc.)
+            - Architectural patterns (MVC, Microservices, Layered, etc.) with implementation quality assessment
+            - Anti-patterns detected and their potential impact on system maintainability
+
+            **4. Dependency & Integration Analysis**
+            - Cross-component dependency mapping with coupling strength indicators
+            - External library and framework dependency assessment
+            - Integration points and data flow analysis between major system components
+
+            **5. Code Quality & Technical Debt Assessment**
+            - Code complexity metrics aggregated across all chunks
+            - Technical debt hotspots and refactoring opportunities
+            - Consistency analysis of coding standards and best practices adherence
+
+            **6. Actionable Recommendations**
+            - Prioritized improvement suggestions for architectural enhancements
+            - Refactoring opportunities with estimated impact and effort
+            - Maintainability and scalability improvement recommendations
+            
+            **Format**: Structured markdown document with clear sections, bullet points for key findings, and summary tables where appropriate.
+
+  agent: batch_coordinator
+
+chunk_analysis_task:
+  description: >
+    Perform comprehensive static analysis of the designated code chunk with laser-focused attention to architectural significance and code quality metrics.
+            
+            **Target Chunk**: {current_chunk}
+            **Processing Context**: Chunk {chunk_number} of {total_chunks}
+            
+            **Analytical Framework - Execute the following systematic evaluation:**
+            
+            **1. Structural Architecture Analysis**
+            - **Class Hierarchy Mapping**: Identify all classes, interfaces, abstract classes, and their inheritance relationships
+            - **Method Signature Analysis**: Catalog public, private, and protected methods with parameter complexity assessment
+            - **Module Organization**: Evaluate package/namespace structure and logical code organization
+            - **Component Boundaries**: Identify discrete functional units and their encapsulation quality
+            
+            **2. Design Pattern Recognition & Assessment**
+            - **Creational Patterns**: Detect Factory, Builder, Singleton, Prototype implementations
+            - **Structural Patterns**: Identify Adapter, Decorator, Facade, Proxy, Composite usage
+            - **Behavioral Patterns**: Recognize Observer, Strategy, Command, State, Template Method patterns
+            - **Architectural Patterns**: Assess MVC, Repository, Service Layer, or other architectural implementations
+            - **Pattern Quality**: Evaluate correct implementation and adherence to pattern principles
+            
+            **3. Dependency Ecosystem Analysis**
+            - **External Dependencies**: Catalog all imported libraries, frameworks, and third-party packages
+            - **Internal Dependencies**: Map relationships to other modules within the codebase
+            - **Dependency Injection**: Identify DI patterns and inversion of control implementations
+            - **Coupling Assessment**: Evaluate tight vs. loose coupling between components
+            - **Version Compatibility**: Note any version-specific dependencies or compatibility concerns
+            
+            **4. Functional Responsibility Mapping**
+            - **Primary Business Logic**: Identify core business rules and domain-specific functionality
+            - **Infrastructure Code**: Distinguish utility functions, data access, and system integration code
+            - **Cross-Cutting Concerns**: Identify logging, security, validation, and error handling implementations
+            - **API Boundaries**: Map public interfaces and external interaction points
+            - **Data Flow**: Trace data transformation and processing pathways
+            
+            **5. Code Quality & Complexity Metrics**
+            - **Cyclomatic Complexity**: Calculate complexity scores for critical methods and classes
+            - **Cognitive Load Assessment**: Evaluate code readability and maintainability factors
+            - **Technical Debt Indicators**: Identify code smells, anti-patterns, and refactoring opportunities
+            - **Test Coverage Gaps**: Note areas lacking adequate test coverage based on code analysis
+            - **Performance Considerations**: Highlight potential performance bottlenecks or optimization opportunities
+            
+            **6. Security & Best Practices Evaluation**
+            - **Security Vulnerabilities**: Identify potential security risks and unsafe coding practices
+            - **Code Standards Compliance**: Assess adherence to established coding conventions
+            - **Documentation Quality**: Evaluate inline documentation and code self-explanation
+            
+            **Analysis Constraints:**
+            - Maintain strict focus on the current chunk without making assumptions about external code
+            - Document any dependencies or references that extend beyond the current chunk boundary
+            - Provide context markers for integration with broader codebase analysis
+            - Flag any incomplete patterns or structures that may span multiple chunks
+
+  expected_output: >
+    **Detailed Code Chunk Analysis Report** structured as follows:
+            
+    **1. Chunk Overview & Metrics**
+    - File count, total lines of code, and token utilization
+    - Primary programming languages and framework versions detected
+    - Overall complexity score and maintainability index
+    
+    **2. Structural Component Inventory**
+    ```
+    Classes: [List with inheritance relationships]
+    Interfaces: [List with implementation details]  
+    Functions/Methods: [Categorized by access level and complexity]
+    Constants/Enums: [Configuration and enumeration values]
+    ```
+    
+    **3. Design Pattern Implementation Matrix**
+    | Pattern Type | Pattern Name | Implementation Quality | Usage Context | Notes |
+    |--------------|--------------|----------------------|---------------|--------|
+    | [Category]   | [Pattern]    | [Excellent/Good/Poor] | [Where Used]  | [Comments] |
+    
+    **4. Dependency Analysis**
+    - **External Libraries**: List with versions and usage purpose
+    - **Internal Modules**: Referenced components with relationship type
+    - **Coupling Strength**: Assessment of dependency tightness (High/Medium/Low)
+    - **Dependency Injection**: DI pattern usage and quality assessment
+    
+    **5. Functional Responsibility Breakdown**
+    - **Core Business Logic**: [Percentage and description]
+    - **Infrastructure/Utility Code**: [Percentage and description]  
+    - **Data Access Layer**: [Percentage and description]
+    - **UI/Presentation Logic**: [Percentage and description]
+    - **Integration/API Code**: [Percentage and description]
+    
+    **6. Quality Assessment & Metrics**
+    ```
+    Cyclomatic Complexity: [Average/Max values]
+    Maintainability Index: [Score out of 100]
+    Technical Debt Ratio: [Estimated hours/percentage]
+    Code Coverage Gaps: [Areas needing attention]
+    ```
+    
+    **7. Issues & Recommendations**
+    - **Critical Issues**: High-priority problems requiring immediate attention
+    - **Performance Concerns**: Potential bottlenecks and optimization opportunities  
+    - **Security Vulnerabilities**: Identified security risks and mitigation suggestions
+    - **Refactoring Opportunities**: Specific improvement suggestions with effort estimates
+    - **Best Practice Violations**: Standards compliance issues and corrections needed
+    
+    **8. Integration Notes**
+    - **External Dependencies**: Components referenced but not defined in this chunk
+    - **Incomplete Patterns**: Patterns that may continue in other chunks
+    - **Cross-Chunk Relationships**: Interfaces and dependencies extending beyond current scope
+      
+    **Format**: Well-structured markdown with tables, code snippets, and clear section headers for easy integration with batch analysis results.
+
+  agent: software_analyst
+
 analysis_task:
   description: >
-    Analyze the provided {repo} to understand its purpose, technologies used, and major components.
-            This is the full source code: {repo}.
-            Identify and document the following:
-            - The overall purpose of the project.
-            - The technologies, APIs, and frameworks used.
-            - All major components (e.g., classes, interfaces, functions, methods).
-            - The interactions between these components.
-            - The architectural patterns and design principles applied.
+    Conduct a comprehensive analysis of the provided repository to understand its purpose, architecture, and implementation details.
+            
+    **Target Repository**: {code_path}
+    **Source Code Context**: {repo}
+
+    **Primary Analysis Objectives:**
+            
+    **1. Project Purpose & Domain Analysis**
+    - Identify and document the overall purpose and business domain of the project
+    - Determine the target audience and use cases the software addresses
+    - Analyze the problem domain and solution approach implemented
+    - Evaluate the project's scope and functional boundaries
+    
+    **2. Technology Stack Assessment**
+    - Catalog all technologies, programming languages, and their versions used
+    - Identify APIs, frameworks, libraries, and external dependencies
+    - Assess technology choices and their appropriateness for the problem domain
+    - Document build tools, deployment technologies, and infrastructure requirements
+    - Evaluate technology stack coherence and integration patterns
+    
+    **3. Component Architecture Mapping**
+    - Identify and categorize all major components including:
+      * **Classes**: Business entities, service classes, utility classes, data models
+      * **Interfaces**: Contracts, APIs, and abstraction layers
+      * **Functions/Methods**: Core business logic, utility functions, and integration points
+      * **Modules/Packages**: Logical organization and namespace structure
+    - Document component hierarchies and inheritance relationships
+    - Map component responsibilities and functional boundaries
+    
+    **4. Component Interaction Analysis**
+    - Trace and document interactions between major components
+    - Identify data flow patterns and communication mechanisms
+    - Map dependency relationships and coupling strengths
+    - Analyze integration points and external system interfaces
+    - Document event-driven interactions and messaging patterns
+    
+    **5. Architectural Patterns & Design Principles**
+    - Identify implemented architectural patterns (MVC, Microservices, Layered, etc.)
+    - Recognize design patterns and their usage contexts
+    - Evaluate adherence to SOLID principles and other design best practices
+    - Assess separation of concerns and modular design implementation
+    - Document architectural decisions and their rationale where evident
+    
+    **6. Code Quality & Structure Assessment**
+    - Evaluate overall project structure and organization
+    - Assess code quality, maintainability, and technical debt indicators
+    - Identify strengths in the current implementation
+    - Highlight areas for improvement and potential weaknesses
+    - Document coding standards and consistency across the codebase
+    
+    **Processing Strategy:**
+    - If the codebase size is within manageable limits, perform direct comprehensive analysis
+    - If the codebase is too large (context overflow risk), intelligently delegate to the batch coordinator
+    - Ensure complete coverage regardless of processing approach chosen
+    - Maintain analysis quality and depth consistency across all processing methods
+
   expected_output: >
     A detailed analysis report covering the purpose of the project, 
     the technologies, APIs, frameworks used, 
@@ -348,3 +581,119 @@ diagram_task:
       inside the code block, reject and regenerate."
 
   agent: code_diagramming_agent
+
+aggregation_task :
+  description: >
+    Synthesize and consolidate the distributed analysis results from {len(results)} code chunks into a unified, comprehensive architectural assessment.
+            
+    **Source Analysis Results**: {results}
+    
+    **Consolidation Methodology:**
+    
+    **1. Cross-Chunk Pattern Synthesis**
+    - Identify recurring architectural patterns, design principles, and coding conventions across all analyzed chunks
+    - Correlate findings to establish system-wide architectural themes and design philosophy
+    - Eliminate redundant observations while preserving unique insights from individual chunks
+    - Validate pattern consistency and identify architectural deviations or inconsistencies
+    
+    **2. Holistic Architecture Reconstruction**
+    - Synthesize individual chunk findings into a coherent, system-wide architectural overview
+    - Map inter-chunk dependencies and component relationships to build complete system topology
+    - Identify architectural layers, boundaries, and integration points across the entire codebase
+    - Reconstruct the overall system design from distributed analysis fragments
+    
+    **3. Component Integration & Relationship Mapping**
+    - Consolidate component inventories from all chunks into a unified system component catalog
+    - Map cross-component dependencies and data flow patterns spanning multiple chunks
+    - Identify system-wide integration patterns and communication mechanisms
+    - Document component hierarchies and architectural boundaries at the system level
+    
+    **4. Quality & Technical Debt Aggregation**
+    - Aggregate code quality metrics and technical debt indicators across all chunks
+    - Identify system-wide quality trends and consistency patterns
+    - Correlate quality issues to architectural decisions and design patterns
+    - Prioritize technical debt based on system-wide impact and architectural significance
+    
+    **5. Strategic Insight Generation**
+    - Synthesize chunk-level findings into strategic, system-level insights and recommendations
+    - Identify opportunities for architectural improvements that span multiple components
+    - Assess overall system maintainability, scalability, and evolution potential
+    - Generate actionable recommendations based on comprehensive system understanding
+    
+    **Quality Assurance Requirements:**
+    - Ensure no critical findings from individual chunks are lost in consolidation
+    - Maintain traceability between consolidated insights and source chunk analyses
+    - Validate that the consolidated analysis provides greater value than the sum of its parts
+    - Focus on emergent properties and system-level characteristics not visible in individual chunks
+  expected_output: >
+    **Unified Architectural Analysis Report** providing comprehensive system-level insights:
+            
+    **1. Executive Architectural Summary**
+    - **System Overview**: High-level description of the overall system architecture and design philosophy
+    - **Architectural Paradigm**: Primary architectural style (Microservices, Monolithic, Layered, Event-Driven, etc.)
+    - **Technology Coherence**: Assessment of technology stack consistency and integration quality
+    - **Design Maturity**: Overall evaluation of architectural sophistication and best practices adoption
+    
+    **2. Consolidated Pattern Analysis**
+    ```
+    Design Patterns Identified: [List with frequency and implementation quality]
+    Architectural Patterns: [System-wide patterns with consistency assessment]
+    Anti-Patterns Detected: [Problematic patterns with system-wide impact]
+    Pattern Consistency Score: [Percentage of consistent pattern implementation]
+    ```
+    
+    **3. System Component Architecture**
+    | Component Category | Components Count | Primary Responsibilities | Integration Quality | Technical Debt Level |
+    |-------------------|------------------|------------------------|-------------------|-------------------|
+    | [Business Logic]  | [Number]         | [Core Functions]       | [High/Med/Low]    | [High/Med/Low]    |
+    | [Data Layer]      | [Number]         | [Data Management]      | [High/Med/Low]    | [High/Med/Low]    |
+    | [Infrastructure]  | [Number]         | [System Services]      | [High/Med/Low]    | [High/Med/Low]    |
+    
+    **4. Cross-System Dependency Analysis**
+    - **Dependency Complexity**: Assessment of overall system coupling and cohesion
+    - **Integration Points**: Critical interfaces and communication patterns between major subsystems
+    - **External Dependencies**: Third-party integrations and their architectural impact
+    - **Circular Dependencies**: Identified architectural issues requiring attention
+    
+    **5. Aggregated Quality Metrics**
+    ```
+    Overall Maintainability Index: [Score/100]
+    Average Cyclomatic Complexity: [Score with distribution]
+    Technical Debt Ratio: [Percentage with hotspot identification]
+    Code Coverage Assessment: [Estimated coverage gaps]
+    Architecture Compliance Score: [Adherence to best practices]
+    ```
+    
+    **6. Strategic Architectural Recommendations**
+    
+    **High Priority (Immediate Action Required):**
+    - [Critical architectural issues requiring immediate attention]
+    - [Security vulnerabilities with system-wide impact]
+    - [Performance bottlenecks affecting system scalability]
+    
+    **Medium Priority (Next Development Cycle):**
+    - [Structural improvements for better maintainability]
+    - [Refactoring opportunities with significant impact]
+    - [Technology upgrade recommendations]
+    
+    **Low Priority (Long-term Evolution):**
+    - [Architectural enhancements for future scalability]
+    - [Code quality improvements and standardization]
+    - [Documentation and knowledge transfer improvements]
+    
+    **7. System Evolution Roadmap**
+    - **Scalability Assessment**: Current architecture's ability to handle growth
+    - **Maintainability Projection**: Long-term maintenance considerations
+    - **Technology Migration Path**: Recommended technology evolution strategy
+    - **Architectural Modernization**: Steps toward improved architectural patterns
+    
+    **8. Implementation Guidelines**
+    - **Development Standards**: Recommended coding and architectural standards
+    - **Quality Gates**: Suggested quality metrics and monitoring approaches  
+    - **Architectural Governance**: Guidelines for maintaining architectural integrity
+    - **Team Organization**: Recommended team structure for optimal system maintenance
+    
+    **Format**: Professional markdown report with executive summary, detailed analysis sections, quantitative metrics tables, 
+    and actionable recommendations suitable for technical leadership and development teams.
+
+  agent: batch_coordinator
