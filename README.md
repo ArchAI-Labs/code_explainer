@@ -59,6 +59,8 @@ crewai install
 *	`TEMPERATURE`: The LLM temperature (optional).
 *	`MAX_TOKENS`: The LLM max tokens (optional).
 *	`TIMEOUT`: The LLM timeout (optional).
+* `CONTEXT_CHUNK_SIZE`: the chunks dimension if your repo is large 
+* `TIKTOKEN_MODEL`: [`tiktoken`](https://github.com/openai/tiktoken) is the OpenAI tokenizer. It counts tokens corresponding to a specific model in the OpenAI API. This is usually a good approximation for all LLMs.
 *	`QDRANT_MODE`: The Qdrant mode (e.g., `memory`, `cloud`, `docker`).
 *	`QDRANT_HOST`: The Qdrant host (required for cloud mode).
 *	`QDRANT_API_KEY`: The Qdrant API key (required for cloud mode).
