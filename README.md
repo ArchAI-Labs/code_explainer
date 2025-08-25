@@ -61,6 +61,7 @@ crewai install
 *	`TIMEOUT`: The LLM timeout (optional).
 * `CONTEXT_CHUNK_SIZE`: the chunks dimension if your repo is large 
 * `TIKTOKEN_MODEL`: [`tiktoken`](https://github.com/openai/tiktoken) is the OpenAI tokenizer. It counts tokens corresponding to a specific model in the OpenAI API. This is usually a good approximation for all LLMs.
+* `ENABLE_BATCH_PROCESSING`: Default *true*. If *false* you force the crew to **NOT USE** chunking.
 *	`QDRANT_MODE`: The Qdrant mode (e.g., `memory`, `cloud`, `docker`).
 *	`QDRANT_HOST`: The Qdrant host (required for cloud mode).
 *	`QDRANT_API_KEY`: The Qdrant API key (required for cloud mode).

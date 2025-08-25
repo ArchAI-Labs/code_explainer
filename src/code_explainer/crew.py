@@ -71,7 +71,7 @@ class CodeExplainer:
             if chunks:
                 inputs["code_chunks"] = chunks
                 inputs["total_chunks"] = len(chunks)
-                print(f"Codice diviso in {len(chunks)} chunk per l'elaborazione")
+                # print(f"Code divided into {len(chunks)} chunks for processing")
         return inputs
     
     def _read_codebase(self, code_path: str) -> Dict[str, str]:

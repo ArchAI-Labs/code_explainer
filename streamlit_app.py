@@ -220,6 +220,7 @@ if st.button("Run ArchAI"):
                 llm_config,
                 local_dir,
                 output_dir,
+                chunking_config
             )
 
         # Visualization
