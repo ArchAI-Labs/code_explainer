@@ -81,13 +81,15 @@ st.markdown(
 
 # Funzione per eseguire il crew
 def run_crew(repository_url, local_path, diagram_type, output_format, sonarqube_url, sonarqube_project, sonarqube_token,
-             llm_config, local_dir, output_dir):
+             llm_config, local_dir, output_dir, chunking_config):
     os.environ["PROVIDER"] = llm_config["provider"]
     os.environ["MODEL"] = llm_config["model"]
     os.environ["BASE_URL"] = llm_config["base_url"]
     os.environ["TEMPERATURE"] = str(llm_config["temperature"])
     os.environ["MAX_TOKENS"] = str(llm_config["max_tokens"])
     os.environ["TIMEOUT"] = str(llm_config["timeout"])
+    os.environ["CONTEXT_CHUNK_SIZE"] = str(chunking_config["chunk_size"])
+    os.environ["TIKTOKEN_MODEL"] = chunking_config["tokenizer_model"]
     os.environ["REPOSITORY_URL"] = repository_url if repository_url else ""
     os.environ["LOCAL_PATH"] = local_path if local_path else ""
     os.environ["DIAGRAM_TYPE"] = diagram_type
@@ -145,6 +147,15 @@ with st.sidebar:
         "temperature": llm_temperature,
         "max_tokens": llm_max_tokens,
         "timeout": llm_timeout,
+    }
+
+    st.subheader("Chunking Setup")
+    context_chunk_size = st.number_input("Max Tokens:", min_value=100, value=int(os.getenv("CONTEXT_CHUNK_SIZE", "1000")), step=10)
+    tiktoken_model = st.text_input("Tiktoken Model:", value=os.getenv("TIKTOKEN_MODEL", ""))
+
+    chunking_config = {
+        "chunk_size": context_chunk_size,
+        "tokenizer_model" : tiktoken_model
     }
 
 # Main area
