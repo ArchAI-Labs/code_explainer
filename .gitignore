@@ -8,3 +8,4 @@ __pycache__/
 memory/
 repos/
 qdrant_storage/
+.github/
