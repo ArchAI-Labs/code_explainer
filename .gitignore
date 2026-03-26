@@ -9,3 +9,4 @@ memory/
 repos/
 qdrant_storage/
 .github/
+.claude/
