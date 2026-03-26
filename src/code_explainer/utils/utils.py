@@ -9,7 +9,9 @@ from crewai.tasks.task_output import TaskOutput
 import panel as pn
 
 
-def print_output(output: TaskOutput, chat_interface=pn.chat.ChatInterface()):
+def print_output(output: TaskOutput, chat_interface=None):
+    if chat_interface is None:
+        chat_interface = pn.chat.ChatInterface()
     message = output.raw
     chat_interface.send(message, user=output.agent, respond=False)
 
@@ -40,135 +42,117 @@ def manage_output_dir(output_dir: str):
     except Exception as e:
         raise ValueError(f"Error creating output directory: {e}")
 
-def LLM_Config(provider:str, 
-               model:str, 
-               temperature:Optional[float] = None,
-               max_tokens:Optional[int] = None, 
-               timeout:Optional[Union[float, int]] = None, 
-               base_url:Optional[str]=None, 
-               callbacks:List[Any] = []):
-    ## Manage LLMs
-    if provider in ["openai", "google", "anthropic", "groq"]:
-        llm = LLM(
-            model=model,
-            temperature=float(temperature),  # Adjust based on task
-            max_tokens=int(max_tokens),  # Set based on output needs
-            timeout=int(timeout),   # Longer timeout for complex tasks
-            callbacks=callbacks,
-        )
-    elif provider == "ollama":
-        llm = LLM(
-            model=model,
-            base_url=base_url,
-            temperature=float(temperature),  # Adjust based on task
-            max_tokens=int(max_tokens),  # Set based on output needs
-            timeout=int(timeout),  # Longer timeout for complex tasks
-            callbacks=callbacks,
-        )
-    else:
-        raise ValueError("Provider not supported yet")
-    return llm
 
-class ContextManager:
-    """Gestisce il contesto per evitare overflow"""
-    
-    def __init__(self, max_tokens=6000, model="gpt-4"):
+def _get_tokenizer(model: str) -> tiktoken.Encoding:
+    try:
+        return tiktoken.encoding_for_model(model)
+    except Exception:
+        return tiktoken.get_encoding("cl100k_base")
+
+
+def LLM_Config(provider: str,
+               model: str,
+               temperature: Optional[float] = None,
+               max_tokens: Optional[int] = None,
+               timeout: Optional[Union[float, int]] = None,
+               base_url: Optional[str] = None,
+               callbacks: Optional[List[Any]] = None):
+    callbacks = callbacks or []
+    kwargs: Dict[str, Any] = dict(model=model, callbacks=callbacks)
+
+    if temperature is not None:
+        kwargs["temperature"] = float(temperature)
+    if max_tokens is not None:
+        kwargs["max_tokens"] = int(max_tokens)
+    if timeout is not None:
+        kwargs["timeout"] = float(timeout)
+
+    if provider not in ["openai", "google", "anthropic", "groq", "ollama"]:
+        raise ValueError("Provider not supported yet")
+
+    if provider == "ollama" and base_url is not None:
+        kwargs["base_url"] = base_url
+
+    return LLM(**kwargs)
+
+
+class BatchProcessingManager:
+    """Manages token counting, chunking, and batch processing decisions."""
+
+    def __init__(self, max_tokens: int = 6000, model: str = "gpt-4.1-mini"):
         self.max_tokens = max_tokens
-        try:
-            self.encoder = tiktoken.encoding_for_model(model)
-        except:
-            self.encoder = tiktoken.get_encoding("cl100k_base")
-    
+        self.encoder = _get_tokenizer(model)
+
     def count_tokens(self, text: str) -> int:
-        """Conta i token in un testo"""
         return len(self.encoder.encode(str(text)))
-    
+
     def chunk_files_by_tokens(self, files_content: Dict[str, str]) -> List[Dict[str, Any]]:
         """Divide i file in chunk basati sui token"""
         chunks = []
-        current_chunk = {"files": {}, "total_tokens": 0, "file_count": 0}
-        
+        current_chunk: Dict[str, Any] = {"files": {}, "total_tokens": 0, "file_count": 0}
+
         for file_path, content in files_content.items():
             file_tokens = self.count_tokens(content)
-            
-            # Se un singolo file supera il limite, lo dividiamo
+
             if file_tokens > self.max_tokens:
-                file_chunks = self._chunk_single_file(file_path, content)
-                chunks.extend(file_chunks)
+                chunks.extend(self._chunk_single_file(file_path, content))
                 continue
-            
-            # Se aggiungendo questo file supereremmo il limite
+
             if current_chunk["total_tokens"] + file_tokens > self.max_tokens:
-                if current_chunk["files"]:  # Se il chunk corrente non è vuoto
+                if current_chunk["files"]:
                     chunks.append(current_chunk)
                 current_chunk = {"files": {}, "total_tokens": 0, "file_count": 0}
-            
+
             current_chunk["files"][file_path] = content
             current_chunk["total_tokens"] += file_tokens
             current_chunk["file_count"] += 1
-        
+
         if current_chunk["files"]:
             chunks.append(current_chunk)
-        
+
         return chunks
-    
+
     def _chunk_single_file(self, file_path: str, content: str) -> List[Dict[str, Any]]:
         """Divide un singolo file troppo grande in chunk"""
         lines = content.split('\n')
         chunks = []
-        current_chunk_lines = []
+        current_lines: List[str] = []
         current_tokens = 0
-        
+
         for line in lines:
             line_tokens = self.count_tokens(line)
-            
+
             if current_tokens + line_tokens > self.max_tokens:
-                if current_chunk_lines:
-                    chunk_content = '\n'.join(current_chunk_lines)
+                if current_lines:
                     chunks.append({
-                        "files": {f"{file_path}_part_{len(chunks)+1}": chunk_content},
+                        "files": {f"{file_path}_part_{len(chunks) + 1}": '\n'.join(current_lines)},
                         "total_tokens": current_tokens,
-                        "file_count": 1
+                        "file_count": 1,
                     })
-                current_chunk_lines = [line]
+                current_lines = [line]
                 current_tokens = line_tokens
             else:
-                current_chunk_lines.append(line)
+                current_lines.append(line)
                 current_tokens += line_tokens
-        
-        if current_chunk_lines:
-            chunk_content = '\n'.join(current_chunk_lines)
+
+        if current_lines:
             chunks.append({
-                "files": {f"{file_path}_part_{len(chunks)+1}": chunk_content},
+                "files": {f"{file_path}_part_{len(chunks) + 1}": '\n'.join(current_lines)},
                 "total_tokens": current_tokens,
-                "file_count": 1
+                "file_count": 1,
             })
-        
+
         return chunks
 
-class BatchProcessingManager:
-    """Manager for determining when to use batch processing"""
-    
-    def __init__(self, max_tokens:int=6000, model:str="gpt-4.1-mini"):
-        self.max_tokens = max_tokens
-        try:
-            self.encoder = tiktoken.encoding_for_model(model)
-        except:
-            self.encoder = tiktoken.get_encoding("cl100k_base")
-    
-    def count_tokens(self, text: str) -> int:
-        """Count tokens in text"""
-        return len(self.encoder.encode(str(text)))
-    
     def should_use_batch_processing(self, repo_content: str) -> bool:
         """Determine if batch processing is needed based on content size"""
         token_count = self.count_tokens(repo_content)
         batch_enabled = os.getenv("ENABLE_BATCH_PROCESSING", "true").lower() == "true"
-        
+
         print(f"Repository token count: {token_count:,}")
         print(f"Max tokens per request: {self.max_tokens:,}")
         print(f"Batch processing enabled: {batch_enabled}")
-        
+
         if token_count > self.max_tokens:
             if batch_enabled:
                 print("🔄 Large repository detected - batch processing will be used")
@@ -180,3 +164,7 @@ class BatchProcessingManager:
         else:
             print("✅ Repository size is manageable - using standard processing")
             return False
+
+
+# Backward-compatible alias
+ContextManager = BatchProcessingManager

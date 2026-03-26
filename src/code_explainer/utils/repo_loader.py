@@ -107,8 +107,7 @@ class RepoLoader:
     def load_repo(self, local_path: str = None, parser_threshold: int = 50):
         target_path = local_path or self.local_repo_path
         if not target_path:
-            print("Error: No local repository path specified or cloned.")
-            return None
+            raise ValueError("No local repository path specified or cloned.")
 
         document_dicts = []
 

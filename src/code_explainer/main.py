@@ -4,12 +4,13 @@ import warnings
 
 from code_explainer.crew import CodeExplainer
 from .utils.repo_loader import RepoLoader
-
 from .utils.sonarqhube_tool import SonarqubeTool
-
 from .utils.utils import BatchProcessingManager
 
 warnings.filterwarnings("ignore", category=SyntaxWarning, module="pysbd")
+
+VALID_DIAGRAM_TYPES = {"component", "class", "sequence", "all"}
+VALID_OUTPUT_FORMATS = {"svg", "uml", "png"}
 
 # This main file is intended to be a way for you to run your
 # crew locally, so refrain from adding unnecessary logic into this file.
@@ -34,14 +35,12 @@ def run():
         raise ValueError("Set a Repository URL or Local Path to your code")
 
     diagram_type = os.getenv("DIAGRAM_TYPE")
-
-    if diagram_type not in ["component", "class", "sequence", "all"]:
-        raise ValueError("diagram type must be component, class, sequence or all")
+    if diagram_type not in VALID_DIAGRAM_TYPES:
+        raise ValueError(f"diagram type must be one of: {', '.join(VALID_DIAGRAM_TYPES)}")
 
     output_format = os.getenv("DIAGRAM_FORMAT")
-
-    if output_format not in ["svg", "uml", "png"]:
-        raise ValueError("diagram output must be 'svg' or 'uml' or 'png'.")
+    if output_format not in VALID_OUTPUT_FORMATS:
+        raise ValueError(f"diagram output must be one of: {', '.join(VALID_OUTPUT_FORMATS)}")
 
     sonarqube_url = os.getenv("SONARQUBE_URL")
     project_key = os.getenv("SONARQUBE_PROJECT")
@@ -55,7 +54,7 @@ def run():
         sonarqube_json = {}
     
     context_chunk_size = int(os.getenv("CONTEXT_CHUNK_SIZE", "6000"))
-    model_tiktoken=os.getenv("TIKTOKEN_MODEL", "gpt-4.1-mini")
+    model_tiktoken=os.getenv("TIKTOKEN_MODEL", "gpt-4o-mini")
     print("\n🤖 Determining processing strategy...")
     batch_manager = BatchProcessingManager(
         max_tokens=context_chunk_size,
@@ -71,55 +70,48 @@ def run():
         "output_format": output_format,
         "sonarqube_json": sonarqube_json,
     }
+    print(f"\n🏗️  Initializing CodeExplainer crew...")
+    code_explainer = CodeExplainer()
+
+    print(f"\n🔄 Starting analysis...")
+    print("=" * 50)
+
     try:
-        print(f"\n🏗️  Initializing CodeExplainer crew...")
-        code_explainer = CodeExplainer()
-        
-        # Execute analysis
-        print(f"\n🔄 Starting analysis...")
-        print("=" * 50)
-        
         if use_batch_processing:
             print("📊 Processing Mode: BATCH PROCESSING")
             print("   - Large codebase will be divided into manageable chunks")
-            print("   - Each chunk will be analyzed independently")  
+            print("   - Each chunk will be analyzed independently")
             print("   - Results will be aggregated into a comprehensive report")
             print()
-            
             result = code_explainer.process_in_batches(inputs)
         else:
             print("📊 Processing Mode: STANDARD PROCESSING")
             print("   - Codebase will be analyzed in a single pass")
             print()
-            
             result = code_explainer.crew().kickoff(inputs=inputs)
-        
+
         print("\n" + "=" * 50)
         print("✅ Analysis completed successfully!")
         print(f"📄 Results have been generated and saved to: {os.getenv('OUTPUT_DIR', './output/')}")
-        
-        # Optional: Print summary of results
+
         if isinstance(result, str) and len(result) > 200:
             print(f"\n📋 Analysis Summary (first 200 characters):")
             print(f"   {result[:200]}...")
-        
+
         return result
     except Exception as e:
-        raise Exception(f"An error occurred while running the crew: {e}")
         print(f"❌ Analysis Error: {e}")
         print("\n🔄 Attempting recovery strategies...")
-        
-        # Recovery strategy: Force batch processing if context error
-        if any(keyword in str(e).lower() for keyword in ["context", "token", "length", "size"]):
+
+        if not use_batch_processing:
             print("   Issue appears to be context-related, trying batch processing...")
             try:
-                code_explainer = CodeExplainer()
                 result = code_explainer.process_in_batches(inputs)
                 print("✅ Recovery successful with batch processing!")
                 return result
             except Exception as recovery_error:
                 print(f"❌ Recovery failed: {recovery_error}")
-                raise Exception(f"Analysis failed even with batch processing: {recovery_error}")
+                raise Exception(f"Analysis failed even with batch processing: {recovery_error}") from recovery_error
         else:
             print("   No recovery strategy available for this error type.")
-            raise Exception(f"An error occurred while running the crew: {e}")
+            raise Exception(f"An error occurred while running the crew: {e}") from e

@@ -7,6 +7,9 @@ import time
 import re
 from plantweb.render import render
 
+PLANTUML_SERVER_BASE = "http://www.plantuml.com/plantuml"
+
+
 class PlantUMLDiagramGeneratorInput(BaseModel):
     text: str = Field(..., description="PlantUML diagram content.")
     output_format: Literal["uml", "svg", "png"] = Field("svg", description="Output format: 'uml' for the code, 'svg' or 'png' for the image.")
@@ -25,35 +28,27 @@ class PlantUMLDiagramGeneratorTool(BaseTool):
         diagram_type = diagram_type.lower().strip()
         text = text.strip()
 
-        print(f"DEBUG: output_format={output_format}, diagram_type={diagram_type}")
+        diagrams = self._split_diagrams(text) if diagram_type == "all" else {diagram_type: text}
 
-        if diagram_type == "all":
-            diagrams = self._split_diagrams(text)
-            paths = []
+        paths = [
+            self._generate_diagram(diagram_text, output_format, output_dir, dtype)
+            for dtype, diagram_text in diagrams.items()
+        ]
 
-            for dtype, diagram_text in diagrams.items():
-                print(f"DEBUG: Generating diagram {dtype} in format {output_format}")
-                file_path = self._generate_diagram(diagram_text, output_format, output_dir, dtype)
-                paths.append(file_path)
+        print(f"Diagrams generated successfully: {paths}")
+        return ", ".join(paths)
 
-            print(f"All diagrams generated successfully: {paths}")
-            return ", ".join(paths)
-
-        else:
-            print(f"DEBUG: Generating single diagram of type {diagram_type}")
-            file_path = self._generate_diagram(text, output_format, output_dir, diagram_type)
-            return file_path
+    def _prepare_diagram_text(self, text: str) -> str:
+        if not text.startswith("@startuml"):
+            text = "@startuml\n" + text
+        if not text.endswith("@enduml"):
+            text += "\n@enduml"
+        if "!theme cerulean" not in text:
+            text = text.replace("@startuml", "@startuml\n!theme cerulean", 1)
+        return text
 
     def _generate_diagram(self, diagram_text: str, output_format: str, output_dir: str, diagram_type: str) -> str:
-        # Prepara contenuto
-        if not diagram_text.startswith("@startuml"):
-            diagram_text = "@startuml\n" + diagram_text
-        if not diagram_text.endswith("@enduml"):
-            diagram_text += "\n@enduml"
-
-        if "!theme cerulean" not in diagram_text:
-            diagram_text = diagram_text.replace("@startuml", "@startuml\n!theme cerulean", 1)
-
+        diagram_text = self._prepare_diagram_text(diagram_text)
         diagram_name = f"{diagram_type}_diagram.{output_format}"
         file_path = os.path.join(output_dir, diagram_name)
 
@@ -66,7 +61,7 @@ class PlantUMLDiagramGeneratorTool(BaseTool):
 
             elif output_format in ["svg", "png"]:
                 print(f"Attempting local rendering with PlantUML for {diagram_type} diagram...")
-                output = render(diagram_text, engine="plantuml", format=output_format, cacheopts={"use_cache": False})
+                output = render(diagram_text, engine="plantuml", format=output_format)
                 with open(file_path, "wb") as file:
                     file.write(output[0])
                 print(f"{output_format.upper()} file saved successfully at: {file_path}")
@@ -81,34 +76,27 @@ class PlantUMLDiagramGeneratorTool(BaseTool):
 
     def _fetch_from_plantuml_server(self, uml_code: str, output_format: str, output_dir: str, diagram_type: str,
                                     max_retries: int = 5, initial_delay: float = 1) -> str:
-        PLANTUML_SERVER = f"http://www.plantuml.com/plantuml/{output_format}"
+        server_url = f"{PLANTUML_SERVER_BASE}/{output_format}"
         diagram_name = f"{diagram_type}_diagram.{output_format}"
         file_path = os.path.join(output_dir, diagram_name)
 
-        if "!theme cerulean" not in uml_code:
-            uml_code = uml_code.replace("@startuml", "@startuml\n!theme cerulean", 1)
+        uml_code = self._prepare_diagram_text(uml_code)
 
         for attempt in range(max_retries):
             try:
-                response = requests.post(PLANTUML_SERVER, data=uml_code.encode("utf-8"))
+                response = requests.post(server_url, data=uml_code.encode("utf-8"))
                 response.raise_for_status()
                 with open(file_path, "wb") as file:
                     file.write(response.content)
                 print(f"Diagram successfully saved at {file_path} (PlantUML Server - Attempt {attempt + 1})")
                 return file_path
 
-            except requests.exceptions.HTTPError as e:
-                status_code = e.response.status_code
-                print(f"HTTP Error {status_code} (Attempt {attempt + 1}): {e}")
-                if attempt < max_retries - 1:
-                    delay = initial_delay * (2 ** attempt)
-                    print(f"Retrying in {delay:.2f} seconds...")
-                    time.sleep(delay)
+            except (requests.exceptions.HTTPError, requests.exceptions.RequestException) as e:
+                if isinstance(e, requests.exceptions.HTTPError):
+                    print(f"HTTP Error {e.response.status_code} (Attempt {attempt + 1}): {e}")
                 else:
-                    raise ValueError(f"Failed to render diagram after {max_retries} attempts. Last error: {e}")
+                    print(f"Request Exception (Attempt {attempt + 1}): {e}")
 
-            except requests.exceptions.RequestException as e:
-                print(f"Request Exception (Attempt {attempt + 1}): {e}")
                 if attempt < max_retries - 1:
                     delay = initial_delay * (2 ** attempt)
                     print(f"Retrying in {delay:.2f} seconds...")

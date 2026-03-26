@@ -30,8 +30,6 @@ class CodeExplainer:
 
     local_dir = os.getenv("LOCAL_DIR")
     output_dir = os.getenv("OUTPUT_DIR")
-    check_memory_dir()
-    # manage_output_dir(output_dir=output_dir)
 
     llm = LLM_Config(
         provider=os.getenv("PROVIDER"),
@@ -56,6 +54,7 @@ class CodeExplainer:
     @before_kickoff
     def prepare_inputs(self, inputs):
         """Prepares inputs and manages batching if necessary"""
+        check_memory_dir()
         inputs["processed"] = True
 
         if "current_chunk" not in inputs:

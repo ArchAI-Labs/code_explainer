@@ -1,12 +1,17 @@
 import requests
 import json
 import base64
+import logging
+
+logger = logging.getLogger(__name__)
+
+REQUEST_TIMEOUT = 10
 
 
 class SonarqubeTool:
     def __init__(
         self,
-        sonarqube_url: str,  # These MUST match args_schema
+        sonarqube_url: str,
         project_key: str,
         api_token: str = None,
     ):
@@ -17,7 +22,7 @@ class SonarqubeTool:
 
     def run(self) -> str:
         if not self.project_key or str(self.project_key).strip().lower() in ["", "none", "null"]:
-            return ""  # No output at all
+            return ""
 
         headers = {}
         if self.api_token:
@@ -30,17 +35,16 @@ class SonarqubeTool:
                 "component": self.project_key,
                 "metricKeys": "bugs,vulnerabilities,code_smells,coverage,duplicated_lines_density",
             }
-            measures_response = requests.get(measures_url, headers=headers, params=params)
+            measures_response = requests.get(measures_url, headers=headers, params=params, timeout=REQUEST_TIMEOUT)
             measures_response.raise_for_status()
             measures_data = measures_response.json().get("component", {}).get("measures", [])
 
-            # Exit early if no measures found
             if not measures_data:
                 return ""
 
             project_url = f"{self.sonarqube_url}/api/projects/search"
             project_params = {"q": self.project_key}
-            project_response = requests.get(project_url, headers=headers, params=project_params)
+            project_response = requests.get(project_url, headers=headers, params=project_params, timeout=REQUEST_TIMEOUT)
             project_response.raise_for_status()
             project_info = project_response.json().get("components", [])
 
@@ -54,7 +58,9 @@ class SonarqubeTool:
             return json.dumps(results, indent=4)
 
         except requests.exceptions.RequestException as e:
-            return ""  # Silently fail if there is any connection error
+            logger.error(f"SonarQube connection failed for project '{self.project_key}': {e}")
+            return ""
 
-        except json.JSONDecodeError:
-            return ""  # Silently fail if response is not valid JSON
+        except json.JSONDecodeError as e:
+            logger.error(f"Invalid JSON response from SonarQube for project '{self.project_key}': {e}")
+            return ""
